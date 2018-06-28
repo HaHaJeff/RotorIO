@@ -1,0 +1,8 @@
+# ignore output, log and input directory
+calc/
+io/bin/
+io/obj/
+io/Test/
+io/libio.a/
+io/MakefileBak/
+LogInfo.log
