@@ -11,9 +11,11 @@ public:
 
 	//@override Write()
 	virtual ssize_t Write(const Data_3D& data);
+	virtual ssize_t Write(const Data_3D& data, bool formated);
 
 	//@override Read()
 	virtual ssize_t Read(Data_3D& data);
+	virtual ssize_t Read(Data_3D& data, bool formated);
 	
 	//@override Lseek()
 	virtual off_t   Lseek(off_t off);
@@ -43,9 +45,11 @@ public:
 
 	//@override Write()
 	virtual ssize_t Write(const Data_3D& data);
+	virtual ssize_t Write(const Data_3D& data, bool formated);
 
 	//@override Read()
 	virtual ssize_t Read(Data_3D& data);
+	virtual ssize_t Read(Data_3D& data, bool formated);
 	
 	//@override Lseek()
 	virtual off_t   Lseek(off_t off);
@@ -63,9 +67,11 @@ public:
 
 	//@override Write()
 	virtual ssize_t Write(const Data_3D& data);
+	virtual ssize_t Write(const Data_3D& data, bool formated);
 
 	//@override Read()
 	virtual ssize_t Read(Data_3D& data);
+	virtual ssize_t Read(Data_3D& data, bool formated);
 	
 	//@override Lseek()
 	virtual off_t   Lseek(off_t off);
@@ -83,9 +89,11 @@ public:
 
 	//@override Write()
 	virtual ssize_t Write(const Data_3D& data);
+	virtual ssize_t Write(const Data_3D& data, bool formated);
 
 	//@override Read()
 	virtual ssize_t Read(Data_3D& data);
+	virtual ssize_t Read(Data_3D& data, bool formated);
 	
 	//@override Lseek()
 	virtual off_t   Lseek(off_t off);
@@ -103,9 +111,11 @@ public:
 
 	//@override Write()
 	virtual ssize_t Write(const Data_3D& data);
+	virtual ssize_t Write(const Data_3D& data, bool formated);
 
 	//@override Read()
 	virtual ssize_t Read(Data_3D& data);
+	virtual ssize_t Read(Data_3D& data, bool formated);
 	
 	//@override Lseek()
 	virtual off_t   Lseek(off_t off);

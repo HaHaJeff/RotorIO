@@ -14,8 +14,18 @@ ssize_t MPIIOStrategy::Write(const Data_3D& data) {
 	return 0;
 }
 
+//@override Write()
+ssize_t MPIIOStrategy::Write(const Data_3D& data, bool formated) {
+	return 0;
+}
+
 //@override Read()
 ssize_t MPIIOStrategy::Read(Data_3D& data) {
+	return 0;
+}
+
+//@override Read()
+ssize_t MPIIOStrategy::Read(Data_3D& data, bool formated) {
 	return 0;
 }
 
@@ -50,6 +60,12 @@ ssize_t MPIIOStrategyOneFilePerProcessAllWrite::Write(const Data_3D& data) {
 	return ret;
 }
 
+//@override Write()
+ssize_t MPIIOStrategyOneFilePerProcessAllWrite::Write(const Data_3D& data, bool formated) {
+	return 0;
+}
+
+
 //@override Read()
 ssize_t MPIIOStrategyOneFilePerProcessAllWrite::Read(Data_3D& data) {
 	int count = data.GetCount();
@@ -58,6 +74,12 @@ ssize_t MPIIOStrategyOneFilePerProcessAllWrite::Read(Data_3D& data) {
 	if (ret != MPI_SUCCESS) fprintf(stderr, "read filename: %s\n, strerror: %s\n, ret: %d\n", filename_.c_str(), strerror(errno), ret);
 	return ret;
 }
+
+//@override Write()
+ssize_t MPIIOStrategyOneFilePerProcessAllWrite::Read(Data_3D& data, bool formated) {
+	return 0;
+}
+
 
 //@override Lseek()
 off_t MPIIOStrategyOneFilePerProcessAllWrite::Lseek(off_t off) {
@@ -96,8 +118,20 @@ ssize_t MPIIOStrategySingleSharedFileOneWrites::Write(const Data_3D& data) {
 	return 0;
 }
 
+//@override Write()
+ssize_t MPIIOStrategySingleSharedFileOneWrites::Write(const Data_3D& data, bool formated) {
+
+	return 0;
+}
+
 //@override Read()
 ssize_t MPIIOStrategySingleSharedFileOneWrites::Read(Data_3D& data) {
+
+	return 0;
+}
+
+//@override Read()
+ssize_t MPIIOStrategySingleSharedFileOneWrites::Read(Data_3D& data, bool formated) {
 
 	return 0;
 }
@@ -133,8 +167,20 @@ ssize_t MPIIOStrategySingleSharedFileAllWrite::Write(const Data_3D& data) {
 	return 0;
 }
 
+//@override Write()
+ssize_t MPIIOStrategySingleSharedFileAllWrite::Write(const Data_3D& data, bool formated) {
+
+	return 0;
+}
+
 //@override Read()
 ssize_t MPIIOStrategySingleSharedFileAllWrite::Read(Data_3D& data) {
+
+	return 0;
+}
+
+//@override Read()
+ssize_t MPIIOStrategySingleSharedFileAllWrite::Read(Data_3D& data, bool formated) {
 
 	return 0;
 }
@@ -160,38 +206,46 @@ int MPIIOStrategySingleSharedFileAllWrite::Close() {
 
 
 //<-------------------------MPIIOStrategySingleSharedFileSubsetWrite-------------------------------->
+
+
 MPIIOStrategySingleSharedFileSubsetWrite::MPIIOStrategySingleSharedFileSubsetWrite(const MPI_Comm& comm) : MPIIOStrategy(comm) {
 
 }
-
 //@override Write()
 ssize_t MPIIOStrategySingleSharedFileSubsetWrite::Write(const Data_3D& data) {
+	return 0;
+}
 
+//@override Write()
+ssize_t MPIIOStrategySingleSharedFileSubsetWrite::Write(const Data_3D& data, bool formated) {
 	return 0;
 }
 
 //@override Read()
 ssize_t MPIIOStrategySingleSharedFileSubsetWrite::Read(Data_3D& data) {
+	return 0;
+}
 
+//@override Read()
+ssize_t MPIIOStrategySingleSharedFileSubsetWrite::Read(Data_3D& data, bool formated) {
 	return 0;
 }
 
 //@override Lseek()
 off_t MPIIOStrategySingleSharedFileSubsetWrite::Lseek(off_t off) {
-
 	return 0;
 }
 
 //@override Open()
 int MPIIOStrategySingleSharedFileSubsetWrite::Open(const std::string& filename) {
-
 	return 0;
 }
+
 
 //@override Close()
 int MPIIOStrategySingleSharedFileSubsetWrite::Close() {
-
 	return 0;
 }
+
 //<-------------------------MPIIOStrategySingleSharedFileSubsetWrite-------------------------------->
 

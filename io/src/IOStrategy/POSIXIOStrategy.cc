@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <cassert>
 
 //<-------------------------POSIXIOStrategy------------------------------->
 POSIXIOStrategy::POSIXIOStrategy() : Strategy(), fd_(-1), filename_("") {
@@ -16,8 +17,18 @@ ssize_t POSIXIOStrategy::Write(const Data_3D& data) {
 	return 0;
 }
 
+//@override Write()
+ssize_t POSIXIOStrategy::Write(const Data_3D& data, bool formated) {
+	return 0;
+}
+
 //@override Read()
 ssize_t POSIXIOStrategy::Read(Data_3D& data) {
+	return 0;
+}
+
+//@override Read()
+ssize_t POSIXIOStrategy::Read(Data_3D& data, bool formated) {
 	return 0;
 }
 
@@ -57,6 +68,33 @@ ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Write(const Data_3D& data) {
 	return offset;
 }
 
+ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Write(const Data_3D& data, bool formated) {
+	if(formated == false) return Write(data);
+	
+	double* ptr = data.pData_;
+
+	FILE* fPtr = fdopen(fd_, "w");
+
+	assert(ptr != NULL);
+
+	int left = data.GetCount();
+	int done = 0;
+
+	int offset = 0;
+
+	
+	while (left > 0 && (fprintf(fPtr, "%.15lf %.15lf %.15lf", ptr[done], ptr[done+1], ptr[done+2]))){
+		done += 3;
+		offset += done*sizeof(double);
+		left -= done;
+	}
+
+	if (NULL != fPtr){
+		fclose(fPtr);
+	}
+
+	return offset;
+}
 //@override Read()
 ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Read(Data_3D& data) {
 	if (fd_ == -1) {
@@ -74,6 +112,11 @@ ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Read(Data_3D& data) {
 	}
 
 	return offset;
+}
+
+//@override Read()
+ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Read(Data_3D& data, bool formated) {
+	return 0;
 }
 
 //@override Lseek()
@@ -115,8 +158,20 @@ ssize_t POSIXIOStrategySingleSharedFileOneWrites::Write(const Data_3D& data) {
 	return 0;
 }
 
+//@override Write()
+ssize_t POSIXIOStrategySingleSharedFileOneWrites::Write(const Data_3D& data, bool formated) {
+
+	return 0;
+}
+
 //@override Read()
 ssize_t POSIXIOStrategySingleSharedFileOneWrites::Read(Data_3D& data) {
+
+	return 0;
+}
+
+//@override Read()
+ssize_t POSIXIOStrategySingleSharedFileOneWrites::Read(Data_3D& data, bool formated) {
 
 	return 0;
 }
@@ -154,8 +209,20 @@ ssize_t POSIXIOStrategySingleSharedFileAllWrite::Write(const Data_3D& data) {
 	return 0;
 }
 
+//@override Write()
+ssize_t POSIXIOStrategySingleSharedFileAllWrite::Write(const Data_3D& data, bool formated) {
+
+	return 0;
+}
+
 //@override Read()
 ssize_t POSIXIOStrategySingleSharedFileAllWrite::Read(Data_3D& data) {
+
+	return 0;
+}
+
+//@override Read()
+ssize_t POSIXIOStrategySingleSharedFileAllWrite::Read(Data_3D& data, bool formated) {
 
 	return 0;
 }
@@ -192,8 +259,20 @@ ssize_t POSIXIOStrategySingleSharedFileSubsetWrite::Write(const Data_3D& data) {
 	return 0;
 }
 
+//@override Write()
+ssize_t POSIXIOStrategySingleSharedFileSubsetWrite::Write(const Data_3D& data, bool formated) {
+
+	return 0;
+}
+
 //@override Read()
 ssize_t POSIXIOStrategySingleSharedFileSubsetWrite::Read(Data_3D& data) {
+
+	return 0;
+}
+
+//@override Read()
+ssize_t POSIXIOStrategySingleSharedFileSubsetWrite::Read(Data_3D& data, bool formated) {
 
 	return 0;
 }
