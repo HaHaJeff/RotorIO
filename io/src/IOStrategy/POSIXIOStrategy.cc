@@ -83,6 +83,7 @@ ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Write(const Data_3D& data, boo
 	int offset = 0;
 
 	
+	//TODO: pricision need to set correclly;
 	while (left > 0 && (fprintf(fPtr, "%.15lf %.15lf %.15lf", ptr[done], ptr[done+1], ptr[done+2]))){
 		done += 3;
 		offset += done*sizeof(double);
