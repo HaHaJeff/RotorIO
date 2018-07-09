@@ -1,11 +1,10 @@
-#include "IOStrategy/MPIIOStrategy.h"
-
+#include "IOStrategy/MPIIOStrategy.h" 
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
 
 //<-------------------------MPIIOStrategy------------------------------->
-MPIIOStrategy::MPIIOStrategy(const MPI_Comm& comm) : Strategy(), fh_(0), filename_("") {
+MPIIOStrategy::MPIIOStrategy(const MPI_Comm& comm, int rank) : Strategy(), fh_(0), filename_(""), rank_(rank) {
 	MPI_Comm_dup(comm, &comm_);
 	MPI_Info_create(&info_);
 }
@@ -45,8 +44,10 @@ int MPIIOStrategy::Close() {
 	return 0;
 }
 
-int MPIIOStrategy::Split(int rank, int groupsize) {
-	return MPI_Comm_split(comm_, rank/groupsize, rank%groupsize, &comm_);
+int MPIIOStrategy::Split(int groupsize) {
+	MPI_Comm_split(comm_, rank_/groupsize, rank_%groupsize, &comm_);
+	MPI_Comm_rank(comm_, &rank_);
+	return rank_;
 }
 
 int MPIIOStrategy::SetView(int offset, MPI_Datatype etype, MPI_Datatype ftype) {
@@ -61,7 +62,7 @@ int MPIIOStrategy::SetInfo(const std::string& key, const std::string& value) {
 
 
 //<-------------------------MPIIOStrategyOneFilePerProcessAllWrite-------------------------------->
-MPIIOStrategyOneFilePerProcessAllWrite::MPIIOStrategyOneFilePerProcessAllWrite(const MPI_Comm& comm) : MPIIOStrategy(comm) {
+MPIIOStrategyOneFilePerProcessAllWrite::MPIIOStrategyOneFilePerProcessAllWrite(const MPI_Comm& comm, int rank) : MPIIOStrategy(comm, rank) {
 }
 
 //@override Write()
@@ -115,19 +116,19 @@ int MPIIOStrategyOneFilePerProcessAllWrite::Close() {
 	filename_.clear();
 	int ret = MPI_File_close(&fh_);
 	if (ret != MPI_SUCCESS) fprintf(stderr, "open filename: %s\n, strerror: %s\n, ret: %d\n", filename_.c_str(), strerror(errno), ret);
+	fh_ = 0;
 	return ret;
 }
 //<-------------------------MPIIOStrategyOneFilePerProcessAllWrite-------------------------------->
 
 
 //<-------------------------MPIIOStrategySingleSharedFileOneWrites-------------------------------->
-MPIIOStrategySingleSharedFileOneWrites::MPIIOStrategySingleSharedFileOneWrites(const MPI_Comm& comm) : MPIIOStrategy(comm) {
+MPIIOStrategySingleSharedFileOneWrites::MPIIOStrategySingleSharedFileOneWrites(const MPI_Comm& comm, int rank) : MPIIOStrategy(comm, rank) {
 
 }
 
 //@override Write()
 ssize_t MPIIOStrategySingleSharedFileOneWrites::Write(const Data_3D& data) {
-
 	return 0;
 }
 
@@ -139,7 +140,6 @@ ssize_t MPIIOStrategySingleSharedFileOneWrites::Write(const Data_3D& data, bool 
 
 //@override Read()
 ssize_t MPIIOStrategySingleSharedFileOneWrites::Read(Data_3D& data) {
-
 	return 0;
 }
 
@@ -157,27 +157,30 @@ off_t MPIIOStrategySingleSharedFileOneWrites::Lseek(off_t off) {
 
 //@override Open()
 int MPIIOStrategySingleSharedFileOneWrites::Open(const std::string& filename) {
-
 	return 0;
 }
 
 //@override Close()
 int MPIIOStrategySingleSharedFileOneWrites::Close() {
-
 	return 0;
 }
 //<-------------------------MPIIOStrategySingleSharedFileOneWrites-------------------------------->
 
 
 //<-------------------------MPIIOStrategySingleSharedFileAllWrite-------------------------------->
-MPIIOStrategySingleSharedFileAllWrite::MPIIOStrategySingleSharedFileAllWrite(const MPI_Comm& comm) : MPIIOStrategy(comm) {
-
+MPIIOStrategySingleSharedFileAllWrite::MPIIOStrategySingleSharedFileAllWrite(const MPI_Comm& comm, int rank) : MPIIOStrategy(comm, rank) {
+	
 }
 
 //@override Write()
 ssize_t MPIIOStrategySingleSharedFileAllWrite::Write(const Data_3D& data) {
+				
+	int count = data.GetCount();
+	double *pData = data.pData_;
+	ssize_t ret = MPI_File_write_all(fh_, pData, count, MPI_DOUBLE, NULL);
+	if (ret != MPI_SUCCESS) fprintf(stderr, "write filename: %s\n, strerror: %s\n, ret: %d\n", filename_.c_str(), strerror(errno), ret);
+	return ret;
 
-	return 0;
 }
 
 //@override Write()
@@ -188,8 +191,12 @@ ssize_t MPIIOStrategySingleSharedFileAllWrite::Write(const Data_3D& data, bool f
 
 //@override Read()
 ssize_t MPIIOStrategySingleSharedFileAllWrite::Read(Data_3D& data) {
+	int count = data.GetCount();
+	double *pData = data.pData_;
+	ssize_t ret = MPI_File_read_all(fh_, pData, count, MPI_DOUBLE, NULL);
+	if (ret != MPI_SUCCESS) fprintf(stderr, "read filename: %s\n, strerror: %s\n, ret: %d\n", filename_.c_str(), strerror(errno), ret);
+	return ret;
 
-	return 0;
 }
 
 //@override Read()
@@ -207,13 +214,22 @@ off_t MPIIOStrategySingleSharedFileAllWrite::Lseek(off_t off) {
 //@override Open()
 int MPIIOStrategySingleSharedFileAllWrite::Open(const std::string& filename) {
 
-	return 0;
+	filename_ = filename;
+	char buf[32] = {};
+	int len = 32;
+	int ret = MPI_File_open(comm_, filename_.c_str(), MPI_MODE_CREATE | MPI_MODE_RDWR | MPI_MODE_UNIQUE_OPEN, MPI_INFO_NULL, &fh_);
+	if (ret != MPI_SUCCESS) fprintf(stderr, "open filename: %s\n, strerror: %s\n, ret: %d\n", filename_.c_str(), strerror(errno), ret);
+	return ret;
 }
 
 //@override Close()
 int MPIIOStrategySingleSharedFileAllWrite::Close() {
 
-	return 0;
+	filename_.clear();
+	int ret = MPI_File_close(&fh_);
+	if (ret != MPI_SUCCESS) fprintf(stderr, "open filename: %s\n, strerror: %s\n, ret: %d\n", filename_.c_str(), strerror(errno), ret);
+	fh_ = 0;
+	return ret;
 }
 //<-------------------------MPIIOStrategySingleSharedFileAllWrite-------------------------------->
 
@@ -221,7 +237,7 @@ int MPIIOStrategySingleSharedFileAllWrite::Close() {
 //<-------------------------MPIIOStrategySingleSharedFileSubsetWrite-------------------------------->
 
 
-MPIIOStrategySingleSharedFileSubsetWrite::MPIIOStrategySingleSharedFileSubsetWrite(const MPI_Comm& comm) : MPIIOStrategy(comm) {
+MPIIOStrategySingleSharedFileSubsetWrite::MPIIOStrategySingleSharedFileSubsetWrite(const MPI_Comm& comm, int rank) : MPIIOStrategy(comm, rank) {
 
 }
 //@override Write()

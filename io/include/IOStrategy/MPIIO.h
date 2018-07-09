@@ -9,11 +9,12 @@
 
 class MPIIO : public IOBasic {
 public:
-	MPIIO(const MPI_Comm& comm);
+	MPIIO(const MPI_Comm& comm, int rank);
 	virtual MPIIOStrategy* GetIOStrategy(TYPE type) const;
 
 private:
 	MPI_Comm comm_;
+	int      rank_;
 };
 
 #endif

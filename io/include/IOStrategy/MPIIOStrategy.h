@@ -7,7 +7,7 @@
 
 class MPIIOStrategy : public Strategy {
 public:
-	MPIIOStrategy(const MPI_Comm& comm);
+	MPIIOStrategy(const MPI_Comm& comm, int rank);
 
 	//@override Write()
 	virtual ssize_t Write(const Data_3D& data);
@@ -26,7 +26,7 @@ public:
 	//@override Close();
 	virtual int     Close();
 
-	int 			Split(int rank, int groupsize);	
+	int 			Split(int groupsize);	
 	int 			SetView(int offset, MPI_Datatype etype, MPI_Datatype ftype);
 	int 			SetInfo(const std::string& key, const std::string& value);
 
@@ -41,12 +41,13 @@ protected:
 	MPI_Comm 	comm_;
 	MPI_File 	fh_;
 	std::string filename_;
+	int         rank_;
 };
 
 class MPIIOStrategyOneFilePerProcessAllWrite : public MPIIOStrategy {
 public:
 
-	MPIIOStrategyOneFilePerProcessAllWrite(const MPI_Comm& comm);
+	MPIIOStrategyOneFilePerProcessAllWrite(const MPI_Comm& comm, int rank);
 
 	//@override Write()
 	virtual ssize_t Write(const Data_3D& data);
@@ -68,7 +69,7 @@ public:
 
 class MPIIOStrategySingleSharedFileOneWrites : public MPIIOStrategy {
 public:
-	MPIIOStrategySingleSharedFileOneWrites(const MPI_Comm& comm);
+	MPIIOStrategySingleSharedFileOneWrites(const MPI_Comm& comm, int rank);
 
 	//@override Write()
 	virtual ssize_t Write(const Data_3D& data);
@@ -90,7 +91,7 @@ public:
 
 class MPIIOStrategySingleSharedFileAllWrite: public MPIIOStrategy {
 public:
-	MPIIOStrategySingleSharedFileAllWrite(const MPI_Comm& comm);
+	MPIIOStrategySingleSharedFileAllWrite(const MPI_Comm& comm, int rank);
 
 	//@override Write()
 	virtual ssize_t Write(const Data_3D& data);
@@ -112,7 +113,7 @@ public:
 
 class MPIIOStrategySingleSharedFileSubsetWrite: public MPIIOStrategy {
 public:
-	MPIIOStrategySingleSharedFileSubsetWrite(const MPI_Comm& comm);
+	MPIIOStrategySingleSharedFileSubsetWrite(const MPI_Comm& comm, int rank);
 
 	//@override Write()
 	virtual ssize_t Write(const Data_3D& data);
