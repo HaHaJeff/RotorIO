@@ -26,6 +26,10 @@ public:
 	//@override Close();
 	virtual int     Close();
 
+	int 			Split(int rank, int groupsize);	
+	int 			SetView(int offset, MPI_Datatype etype, MPI_Datatype ftype);
+	int 			SetInfo(const std::string& key, const std::string& value);
+
 	const MPI_Comm& GetComm() const {return comm_;}
 
 	const std::string& GetFilename() const {return filename_;}
@@ -33,6 +37,7 @@ public:
 	const MPI_File& GetFh() const {return fh_;}
 
 protected:
+	MPI_Info    info_;
 	MPI_Comm 	comm_;
 	MPI_File 	fh_;
 	std::string filename_;

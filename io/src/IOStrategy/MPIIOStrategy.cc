@@ -5,8 +5,9 @@
 #include <string.h>
 
 //<-------------------------MPIIOStrategy------------------------------->
-MPIIOStrategy::MPIIOStrategy(const MPI_Comm& comm) : Strategy(), comm_(comm), fh_(0), filename_("") {
-
+MPIIOStrategy::MPIIOStrategy(const MPI_Comm& comm) : Strategy(), fh_(0), filename_("") {
+	MPI_Comm_dup(comm, &comm_);
+	MPI_Info_create(&info_);
 }
 
 //@override Write()
@@ -42,6 +43,18 @@ int MPIIOStrategy::Open(const std::string& filename) {
 //@override Close()
 int MPIIOStrategy::Close() {
 	return 0;
+}
+
+int MPIIOStrategy::Split(int rank, int groupsize) {
+	return MPI_Comm_split(comm_, rank/groupsize, rank%groupsize, &comm_);
+}
+
+int MPIIOStrategy::SetView(int offset, MPI_Datatype etype, MPI_Datatype ftype) {
+	return MPI_File_set_view(fh_, (MPI_Offset)offset, etype, ftype, "native", info_);
+}
+
+int MPIIOStrategy::SetInfo(const std::string& key, const std::string& value) {
+	MPI_Info_set(info_, key.c_str(), value.c_str());
 }
 //<-------------------------MPIIOStrategy------------------------------->
 
