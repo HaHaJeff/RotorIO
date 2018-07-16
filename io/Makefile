@@ -1,8 +1,8 @@
 CXX=mpic++
 CXXFLAGS+=-g -w -std=c++11
-LIBRARY=-lpthread
+LIBRARY=-lpthread ./third-party/lib/libhdf5.a ./third-party/lib/libhdf5_hl.a -lz -ldl -lm
 
-INC_DIR=-I./include -I./include/IOStrategy
+INC_DIR=-I./include -I./include/IOStrategy -I./third-party/include
 
 TEST_DIR=./Test
 TEST_OBJ_DIR=${TEST_DIR}/obj
@@ -21,7 +21,7 @@ OBJS=$(patsubst %.cc, $(OBJ_DIR)/%.o, $(notdir $(SRCS)))
 
 LIB=libio.a
 
-all: init $(OBJFILES) $(TARGET_OBJS) $(LIB) TestAtomic TestThread TestMPIIO TestPOSIXIO
+all: init $(OBJFILES) $(TARGET_OBJS) $(LIB) TestAtomic TestThread TestMPIIO TestPOSIXIO TestHDF5IO
 
 $(OBJFILES):%.o:%.cc
 	@echo "Compiling $^ ==> $@..."
@@ -50,6 +50,10 @@ TestMPIIO : $(OBJS)
 TestPOSIXIO : $(OBJS)
 	@echo "Compiling $^ ==> $@..."
 	$(CXX) $(TEST_OBJ_DIR)/TestPOSIXIO.o $^ -o ${BIN_DIR}/$@ $(LIBRARY) $(INC_DIR) $(CXXFLAGS)
+
+TestHDF5IO : $(OBJS)
+	@echo "Compiling $^ ==> $@..."
+	$(CXX) $(TEST_OBJ_DIR)/TestHDF5IO.o $^ -o ${BIN_DIR}/$@ $(LIBRARY) $(INC_DIR) $(CXXFLAGS)
 
 init:
 	mkdir -p $(OBJ_DIR)

@@ -9,19 +9,19 @@ MPIIOStrategy* MPIIO::GetIOStrategy(TYPE type) const {
 	switch(type) {
 		//for OneFilePerProcessAllWrite
 		case 0:
-			pRet = new MPIIOStrategyOneFilePerProcessAllWrite(comm_, rank_);
+			pRet = new MPIIOStrategyA(comm_, rank_);
 			break;
 		//for SingleSharedFileOnelWrites
 		case 1:
-			pRet = new MPIIOStrategySingleSharedFileOneWrites(comm_, rank_);
+			pRet = new MPIIOStrategyB(comm_, rank_);
 			break;
 		//for SingleSharedFileAlllWrite
 		case 2:
-			pRet = new MPIIOStrategySingleSharedFileAllWrite(comm_, rank_);
+			pRet = new MPIIOStrategyC(comm_, rank_);
 			break;
 		//for SingleSharedFileSubsetWrite
 		case 3:
-			pRet = new MPIIOStrategySingleSharedFileSubsetWrite(comm_, rank_);
+			pRet = new MPIIOStrategyD(comm_, rank_);
 			break;
 		default:
 			break;

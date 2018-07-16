@@ -1,4 +1,4 @@
-#include "IOStrategy/MPIIOStrategy.h" 
+#include "IOStrategy/MPIIOStrategy.h"
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
@@ -61,12 +61,12 @@ int MPIIOStrategy::SetInfo(const std::string& key, const std::string& value) {
 
 
 
-//<-------------------------MPIIOStrategyOneFilePerProcessAllWrite-------------------------------->
-MPIIOStrategyOneFilePerProcessAllWrite::MPIIOStrategyOneFilePerProcessAllWrite(const MPI_Comm& comm, int rank) : MPIIOStrategy(comm, rank) {
+//<-------------------------OneFilePerProcessAllWrite-------------------------------->
+MPIIOStrategyA::MPIIOStrategyA(const MPI_Comm& comm, int rank) : MPIIOStrategy(comm, rank) {
 }
 
 //@override Write()
-ssize_t MPIIOStrategyOneFilePerProcessAllWrite::Write(const Data_3D& data) {
+ssize_t MPIIOStrategyA::Write(const Data_3D& data) {
 	int count = data.GetCount();
 	double *pData = data.pData_;
 	ssize_t ret = MPI_File_write_all(fh_, pData, count, MPI_DOUBLE, NULL);
@@ -75,13 +75,13 @@ ssize_t MPIIOStrategyOneFilePerProcessAllWrite::Write(const Data_3D& data) {
 }
 
 //@override Write()
-ssize_t MPIIOStrategyOneFilePerProcessAllWrite::Write(const Data_3D& data, bool formated) {
+ssize_t MPIIOStrategyA::Write(const Data_3D& data, bool formated) {
 	return 0;
 }
 
 
 //@override Read()
-ssize_t MPIIOStrategyOneFilePerProcessAllWrite::Read(Data_3D& data) {
+ssize_t MPIIOStrategyA::Read(Data_3D& data) {
 	int count = data.GetCount();
 	double *pData = data.pData_;
 	ssize_t ret = MPI_File_read_all(fh_, pData, count, MPI_DOUBLE, NULL);
@@ -90,191 +90,183 @@ ssize_t MPIIOStrategyOneFilePerProcessAllWrite::Read(Data_3D& data) {
 }
 
 //@override Write()
-ssize_t MPIIOStrategyOneFilePerProcessAllWrite::Read(Data_3D& data, bool formated) {
+ssize_t MPIIOStrategyA::Read(Data_3D& data, bool formated) {
 	return 0;
 }
 
 
 //@override Lseek()
-off_t MPIIOStrategyOneFilePerProcessAllWrite::Lseek(off_t off) {
+off_t MPIIOStrategyA::Lseek(off_t off) {
 
 	return 0;
 }
 
 //@override Open()
-int MPIIOStrategyOneFilePerProcessAllWrite::Open(const std::string& filename) {
+int MPIIOStrategyA::Open(const std::string& filename) {
 	filename_ = filename;
-	char buf[32] = {};
-	int len = 32;
 	int ret = MPI_File_open(comm_, filename_.c_str(), MPI_MODE_CREATE | MPI_MODE_RDWR | MPI_MODE_UNIQUE_OPEN, MPI_INFO_NULL, &fh_);
 	if (ret != MPI_SUCCESS) fprintf(stderr, "open filename: %s\n, strerror: %s\n, ret: %d\n", filename_.c_str(), strerror(errno), ret);
 	return ret;
 }
 
 //@override Close()
-int MPIIOStrategyOneFilePerProcessAllWrite::Close() {
+int MPIIOStrategyA::Close() {
 	filename_.clear();
 	int ret = MPI_File_close(&fh_);
 	if (ret != MPI_SUCCESS) fprintf(stderr, "open filename: %s\n, strerror: %s\n, ret: %d\n", filename_.c_str(), strerror(errno), ret);
 	fh_ = 0;
 	return ret;
 }
-//<-------------------------MPIIOStrategyOneFilePerProcessAllWrite-------------------------------->
+//<-------------------------OneFilePerProcessAllWrite-------------------------------->
 
 
-//<-------------------------MPIIOStrategySingleSharedFileOneWrites-------------------------------->
-MPIIOStrategySingleSharedFileOneWrites::MPIIOStrategySingleSharedFileOneWrites(const MPI_Comm& comm, int rank) : MPIIOStrategy(comm, rank) {
+//<-------------------------SingleSharedFileOneWrites-------------------------------->
+MPIIOStrategyB::MPIIOStrategyB(const MPI_Comm& comm, int rank) : MPIIOStrategy(comm, rank) {
 
 }
 
 //@override Write()
-ssize_t MPIIOStrategySingleSharedFileOneWrites::Write(const Data_3D& data) {
+ssize_t MPIIOStrategyB::Write(const Data_3D& data) {
 	return 0;
 }
 
 //@override Write()
-ssize_t MPIIOStrategySingleSharedFileOneWrites::Write(const Data_3D& data, bool formated) {
+ssize_t MPIIOStrategyB::Write(const Data_3D& data, bool formated) {
 
 	return 0;
 }
 
 //@override Read()
-ssize_t MPIIOStrategySingleSharedFileOneWrites::Read(Data_3D& data) {
+ssize_t MPIIOStrategyB::Read(Data_3D& data) {
 	return 0;
 }
 
 //@override Read()
-ssize_t MPIIOStrategySingleSharedFileOneWrites::Read(Data_3D& data, bool formated) {
+ssize_t MPIIOStrategyB::Read(Data_3D& data, bool formated) {
 
 	return 0;
 }
 
 //@override Lseek()
-off_t MPIIOStrategySingleSharedFileOneWrites::Lseek(off_t off) {
+off_t MPIIOStrategyB::Lseek(off_t off) {
 
 	return 0;
 }
 
 //@override Open()
-int MPIIOStrategySingleSharedFileOneWrites::Open(const std::string& filename) {
+int MPIIOStrategyB::Open(const std::string& filename) {
 	return 0;
 }
 
 //@override Close()
-int MPIIOStrategySingleSharedFileOneWrites::Close() {
+int MPIIOStrategyB::Close() {
 	return 0;
 }
-//<-------------------------MPIIOStrategySingleSharedFileOneWrites-------------------------------->
+//<-------------------------SingleSharedFileOneWrites-------------------------------->
 
 
-//<-------------------------MPIIOStrategySingleSharedFileAllWrite-------------------------------->
-MPIIOStrategySingleSharedFileAllWrite::MPIIOStrategySingleSharedFileAllWrite(const MPI_Comm& comm, int rank) : MPIIOStrategy(comm, rank) {
-	
+//<-------------------------SingleSharedFileAllWrite-------------------------------->
+MPIIOStrategyC::MPIIOStrategyC(const MPI_Comm& comm, int rank) : MPIIOStrategy(comm, rank) {
+
 }
 
 //@override Write()
-ssize_t MPIIOStrategySingleSharedFileAllWrite::Write(const Data_3D& data) {
-				
+ssize_t MPIIOStrategyC::Write(const Data_3D& data) {
+
 	int count = data.GetCount();
 	double *pData = data.pData_;
-	ssize_t ret = MPI_File_write_all(fh_, pData, count, MPI_DOUBLE, NULL);
-	if (ret != MPI_SUCCESS) fprintf(stderr, "write filename: %s\n, strerror: %s\n, ret: %d\n", filename_.c_str(), strerror(errno), ret);
-	return ret;
+
+
+	return 0;
 
 }
 
 //@override Write()
-ssize_t MPIIOStrategySingleSharedFileAllWrite::Write(const Data_3D& data, bool formated) {
+ssize_t MPIIOStrategyC::Write(const Data_3D& data, bool formated) {
 
 	return 0;
 }
 
 //@override Read()
-ssize_t MPIIOStrategySingleSharedFileAllWrite::Read(Data_3D& data) {
+ssize_t MPIIOStrategyC::Read(Data_3D& data) {
 	int count = data.GetCount();
 	double *pData = data.pData_;
-	ssize_t ret = MPI_File_read_all(fh_, pData, count, MPI_DOUBLE, NULL);
-	if (ret != MPI_SUCCESS) fprintf(stderr, "read filename: %s\n, strerror: %s\n, ret: %d\n", filename_.c_str(), strerror(errno), ret);
-	return ret;
 
+  return 0;
 }
 
 //@override Read()
-ssize_t MPIIOStrategySingleSharedFileAllWrite::Read(Data_3D& data, bool formated) {
+ssize_t MPIIOStrategyC::Read(Data_3D& data, bool formated) {
 
 	return 0;
 }
 
 //@override Lseek()
-off_t MPIIOStrategySingleSharedFileAllWrite::Lseek(off_t off) {
+off_t MPIIOStrategyC::Lseek(off_t off) {
 
 	return 0;
 }
 
 //@override Open()
-int MPIIOStrategySingleSharedFileAllWrite::Open(const std::string& filename) {
+int MPIIOStrategyC::Open(const std::string& filename) {
 
 	filename_ = filename;
-	char buf[32] = {};
-	int len = 32;
 	int ret = MPI_File_open(comm_, filename_.c_str(), MPI_MODE_CREATE | MPI_MODE_RDWR | MPI_MODE_UNIQUE_OPEN, MPI_INFO_NULL, &fh_);
 	if (ret != MPI_SUCCESS) fprintf(stderr, "open filename: %s\n, strerror: %s\n, ret: %d\n", filename_.c_str(), strerror(errno), ret);
 	return ret;
 }
 
 //@override Close()
-int MPIIOStrategySingleSharedFileAllWrite::Close() {
-
+int MPIIOStrategyC::Close() {
 	filename_.clear();
 	int ret = MPI_File_close(&fh_);
 	if (ret != MPI_SUCCESS) fprintf(stderr, "open filename: %s\n, strerror: %s\n, ret: %d\n", filename_.c_str(), strerror(errno), ret);
 	fh_ = 0;
 	return ret;
 }
-//<-------------------------MPIIOStrategySingleSharedFileAllWrite-------------------------------->
+//<-------------------------SingleSharedFileAllWrite-------------------------------->
 
 
-//<-------------------------MPIIOStrategySingleSharedFileSubsetWrite-------------------------------->
+//<-------------------------SingleSharedFileSubsetWrite-------------------------------->
 
 
-MPIIOStrategySingleSharedFileSubsetWrite::MPIIOStrategySingleSharedFileSubsetWrite(const MPI_Comm& comm, int rank) : MPIIOStrategy(comm, rank) {
-
+MPIIOStrategyD::MPIIOStrategyD(const MPI_Comm& comm, int rank) : MPIIOStrategy(comm, rank) {
 }
+
 //@override Write()
-ssize_t MPIIOStrategySingleSharedFileSubsetWrite::Write(const Data_3D& data) {
+ssize_t MPIIOStrategyD::Write(const Data_3D& data) {
 	return 0;
 }
 
 //@override Write()
-ssize_t MPIIOStrategySingleSharedFileSubsetWrite::Write(const Data_3D& data, bool formated) {
+ssize_t MPIIOStrategyD::Write(const Data_3D& data, bool formated) {
 	return 0;
 }
 
 //@override Read()
-ssize_t MPIIOStrategySingleSharedFileSubsetWrite::Read(Data_3D& data) {
+ssize_t MPIIOStrategyD::Read(Data_3D& data) {
 	return 0;
 }
 
 //@override Read()
-ssize_t MPIIOStrategySingleSharedFileSubsetWrite::Read(Data_3D& data, bool formated) {
+ssize_t MPIIOStrategyD::Read(Data_3D& data, bool formated) {
 	return 0;
 }
 
 //@override Lseek()
-off_t MPIIOStrategySingleSharedFileSubsetWrite::Lseek(off_t off) {
+off_t MPIIOStrategyD::Lseek(off_t off) {
 	return 0;
 }
 
 //@override Open()
-int MPIIOStrategySingleSharedFileSubsetWrite::Open(const std::string& filename) {
+int MPIIOStrategyD::Open(const std::string& filename) {
 	return 0;
 }
-
 
 //@override Close()
-int MPIIOStrategySingleSharedFileSubsetWrite::Close() {
+int MPIIOStrategyD::Close() {
 	return 0;
 }
 
-//<-------------------------MPIIOStrategySingleSharedFileSubsetWrite-------------------------------->
+//<-------------------------SingleSharedFileSubsetWrite-------------------------------->
 

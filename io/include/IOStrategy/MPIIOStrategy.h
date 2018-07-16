@@ -16,7 +16,7 @@ public:
 	//@override Read()
 	virtual ssize_t Read(Data_3D& data);
 	virtual ssize_t Read(Data_3D& data, bool formated);
-	
+
 	//@override Lseek()
 	virtual off_t   Lseek(off_t off);
 
@@ -26,7 +26,7 @@ public:
 	//@override Close();
 	virtual int     Close();
 
-	int 			Split(int groupsize);	
+	int 			Split(int groupsize);
 	int 			SetView(int offset, MPI_Datatype etype, MPI_Datatype ftype);
 	int 			SetInfo(const std::string& key, const std::string& value);
 
@@ -44,10 +44,11 @@ protected:
 	int         rank_;
 };
 
-class MPIIOStrategyOneFilePerProcessAllWrite : public MPIIOStrategy {
+//for OneFilePerProcessAllWrite
+class MPIIOStrategyA: public MPIIOStrategy {
 public:
 
-	MPIIOStrategyOneFilePerProcessAllWrite(const MPI_Comm& comm, int rank);
+	MPIIOStrategyA(const MPI_Comm& comm, int rank);
 
 	//@override Write()
 	virtual ssize_t Write(const Data_3D& data);
@@ -56,7 +57,7 @@ public:
 	//@override Read()
 	virtual ssize_t Read(Data_3D& data);
 	virtual ssize_t Read(Data_3D& data, bool formated);
-	
+
 	//@override Lseek()
 	virtual off_t   Lseek(off_t off);
 
@@ -67,9 +68,10 @@ public:
 	virtual int     Close();
 };
 
-class MPIIOStrategySingleSharedFileOneWrites : public MPIIOStrategy {
+//for SingleSharedFileOnelWrites
+class MPIIOStrategyB: public MPIIOStrategy {
 public:
-	MPIIOStrategySingleSharedFileOneWrites(const MPI_Comm& comm, int rank);
+	MPIIOStrategyB(const MPI_Comm& comm, int rank);
 
 	//@override Write()
 	virtual ssize_t Write(const Data_3D& data);
@@ -78,7 +80,7 @@ public:
 	//@override Read()
 	virtual ssize_t Read(Data_3D& data);
 	virtual ssize_t Read(Data_3D& data, bool formated);
-	
+
 	//@override Lseek()
 	virtual off_t   Lseek(off_t off);
 
@@ -89,9 +91,10 @@ public:
 	virtual int     Close();
 };
 
-class MPIIOStrategySingleSharedFileAllWrite: public MPIIOStrategy {
+//for SingleSharedFileAllWrite
+class MPIIOStrategyC: public MPIIOStrategy {
 public:
-	MPIIOStrategySingleSharedFileAllWrite(const MPI_Comm& comm, int rank);
+	MPIIOStrategyC(const MPI_Comm& comm, int rank);
 
 	//@override Write()
 	virtual ssize_t Write(const Data_3D& data);
@@ -100,7 +103,7 @@ public:
 	//@override Read()
 	virtual ssize_t Read(Data_3D& data);
 	virtual ssize_t Read(Data_3D& data, bool formated);
-	
+
 	//@override Lseek()
 	virtual off_t   Lseek(off_t off);
 
@@ -111,9 +114,10 @@ public:
 	virtual int     Close();
 };
 
-class MPIIOStrategySingleSharedFileSubsetWrite: public MPIIOStrategy {
+//for SingleSharedFileSubsetWrite
+class MPIIOStrategyD: public MPIIOStrategy {
 public:
-	MPIIOStrategySingleSharedFileSubsetWrite(const MPI_Comm& comm, int rank);
+	MPIIOStrategyD(const MPI_Comm& comm, int rank);
 
 	//@override Write()
 	virtual ssize_t Write(const Data_3D& data);
@@ -122,7 +126,7 @@ public:
 	//@override Read()
 	virtual ssize_t Read(Data_3D& data);
 	virtual ssize_t Read(Data_3D& data, bool formated);
-	
+
 	//@override Lseek()
 	virtual off_t   Lseek(off_t off);
 
