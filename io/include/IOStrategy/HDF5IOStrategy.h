@@ -6,6 +6,26 @@
 
 #include <memory>
 
+const int g_idim=3;
+
+struct HDF5Data{ 
+
+	void SetDsetid(hid_t fileid);
+	void SetFilespace();
+	void SetMemspace();
+	
+	hid_t dsetid_;
+	hid_t filespace_;
+	hid_t memspace_;
+	
+	int globaldims_[g_idim];
+	int chunkdims_[g_idim];
+	int offset_[g_idim];
+	int stride_[g_idim];
+	int count_[g_idim];
+	int block_[g_idim];
+};
+
 class HDF5IOStrategy : public Strategy {
 public:
 	HDF5IOStrategy(const MPI_Comm& comm, int rank);
@@ -55,16 +75,18 @@ public:
 
 	//@override Close();
 	virtual int     Close();
+
+private:
 };
 
 //for SingleSharedFileAllWrite
 class HDF5IOStrategyB: public HDF5IOStrategy {
-public:
-  HDF5IOStrategyB(const MPI_Comm& comm, int rank);
+  public:
+    HDF5IOStrategyB(const MPI_Comm& comm, int rank);
 
-  //@override Write()
-  virtual ssize_t Write(const Data_3D& data);
-  virtual ssize_t Write(const Data_3D& data, bool formated);
+    //@override Write()
+    virtual ssize_t Write(const Data_3D& data);
+    virtual ssize_t Write(const Data_3D& data, bool formated);
 
 	//@override Read()
 	virtual ssize_t Read(Data_3D& data);
@@ -78,6 +100,13 @@ public:
 
 	//@override Close();
 	virtual int     Close();
+
+	void SetGlobalView(int nx, int ny, int nz);
+
+  private:
+	int globalx_;
+	int globaly_;
+	int globalz_;
 };
 
 //for SingleSharedFileOneWrites

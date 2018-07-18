@@ -1,8 +1,8 @@
 CXX=mpic++
 CXXFLAGS+=-g -w -std=c++11
-LIBRARY=-lpthread ./third-party/lib/libhdf5.a ./third-party/lib/libhdf5_hl.a -lz -ldl -lm
+LIBRARY=-lpthread ./third_party/lib/libhdf5.a ./third_party/lib/libhdf5_hl.a -lz -ldl -lm
 
-INC_DIR=-I./include -I./include/IOStrategy -I./third-party/include
+INC_DIR=-I./include -I./include/IOStrategy -I./third_party/include
 
 TEST_DIR=./Test
 TEST_OBJ_DIR=${TEST_DIR}/obj
@@ -31,7 +31,7 @@ $(TARGET_OBJS):%.o:%.cc
 	@echo "Compiling $^ ==> $@..."
 	$(CXX) -c $^ -o $(TEST_OBJ_DIR)/$(notdir $@) $(LIBRARY) $(INC_DIR) $(CXXFLAGS) 
 
-$(LIB) : $(OBJS) 
+$(LIB) : $(OBJS) ./third_party/lib/libhdf5.a ./third_party/lib/libhdf5_hl.a
 	rm -f $@
 	ar cr $@ $(^)
 
