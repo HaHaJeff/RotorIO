@@ -47,6 +47,8 @@ public:
 	//@override Close();
 	virtual int     Close();
 
+	virtual void    SetDimStride(int nx, int ny, int nz);
+
 protected:
 	MPI_Comm comm_;
 	hid_t fileid_;

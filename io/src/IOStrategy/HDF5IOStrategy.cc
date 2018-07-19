@@ -39,6 +39,11 @@ int HDF5IOStrategy::Open(const std::string& filename) {
 int HDF5IOStrategy::Close() {
 	return 0;
 }
+
+void HDF5IOStrategy::SetDimStride(int nx, int ny, int nz) {
+	
+}
+
 //<-------------------------HDF5IOStrategy------------------------------->
 
 
