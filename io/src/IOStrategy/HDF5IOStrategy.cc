@@ -141,9 +141,9 @@ ssize_t HDF5IOStrategyB::Write(const Data_3D& data) {
 	block[2] = chunk_dims[2];
 
 	int block_id = data.blockid_;
-	offset[0] = block_id/4 * data.nx_;
-	offset[1] = block_id%2 * data.ny_;
-	offset[2] = (block_id/2)%2 * data.nz_;
+	offset[0] = block_id/(nx_+1) * data.nx_;
+	offset[1] = block_id%(ny_) * data.ny_;
+	offset[2] = (block_id/(ny_))%(nz_) * data.nz_;
 	
 	filespace = H5Dget_space(dataset_id);
 	H5Sselect_hyperslab(filespace, H5S_SELECT_SET, offset, stride, count, block);
@@ -212,6 +212,12 @@ void HDF5IOStrategyB::SetGlobalView(int nx, int ny, int nz) {
 	globalx_ = nx;
 	globaly_ = ny;
 	globalz_ = nz;
+}
+
+void HDF5IOStrategyB::SetDimStride(int nx, int ny, int nz) {
+	nx_ = nx;
+	ny_ = ny;
+	nz_ = nz;
 }
 
 //<-------------------------SingleSharedFileOneWrites-------------------------------->

@@ -102,11 +102,15 @@ class HDF5IOStrategyB: public HDF5IOStrategy {
 	virtual int     Close();
 
 	void SetGlobalView(int nx, int ny, int nz);
+	void SetDimStride(int nx, int ny, int nz);
 
   private:
 	int globalx_;
 	int globaly_;
 	int globalz_;
+	int nx_;
+	int ny_;
+	int nz_;
 };
 
 //for SingleSharedFileOneWrites
