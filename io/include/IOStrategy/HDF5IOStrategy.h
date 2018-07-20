@@ -103,16 +103,18 @@ class HDF5IOStrategyB: public HDF5IOStrategy {
 	//@override Close();
 	virtual int     Close();
 
-	void SetGlobalView(int nx, int ny, int nz);
 	void SetDimStride(int nx, int ny, int nz);
+	void SetDataspace(const int dimsf[3], const int chunk_dims[3]);
+	void SetDatasetid(const int chunk_dims[3], const std::string& dataname);
+	void SetChunk(int blockid, const int dims[3]);
 
   private:
-	int globalx_;
-	int globaly_;
-	int globalz_;
 	int nx_;
 	int ny_;
 	int nz_;
+	hid_t datasetid_;
+	hid_t dataspace_;
+	hid_t chunkspace_;
 };
 
 //for SingleSharedFileOneWrites

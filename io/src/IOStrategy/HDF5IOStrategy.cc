@@ -213,10 +213,25 @@ int HDF5IOStrategyB::Close() {
 
 }
 
-void HDF5IOStrategyB::SetGlobalView(int nx, int ny, int nz) {
-	globalx_ = nx;
-	globaly_ = ny;
-	globalz_ = nz;
+void HDF5IOStrategy::SetDataspace(const int dimsf[3], const int chunk_dims[3]) {
+	dataspace_ = H5Screate_simple(3, dimsf, NULL);
+	chunkspace_ = H5Screate_simple(3, chunk_dims, NULL);
+}
+
+void HDF5IOStrategy::SetDatasetid(const int chunk_dims[3], const std::string& dataname) {
+	hid_t plist_id = H5Pcreate(H5P_DATASET_CREATE);
+	H5Pset_chunk(plist_id, 3, chunk_dims);
+	datasetid_ = H5Dcreate(fileid_, dataname.c_str(), H5T_NATIVE_DOUBLE, dataspace_, H5P_DEFAULT, plist_id, H5P_DEFAULT);
+	H5Pclose(plist_id);
+}
+
+/*chunk 33 65 193, x = 2, y = 2, z = 3*/
+void HDF5IOStrategy::SetChunk(int blockid, const int chunk_dims[3], const chunk_count[3]) {
+	hsize_t count[3]{1, 1, 1}, stride[3]{1, 1, 1}, block[3]{chunk_dims[0], chunk_dims[1], chunk_dims[2]};
+	int nx = chunk_count[0], ny = chunk_count[1], nz = chunk_count[2];
+	hsize_t offset[3]{(blockid/(nz+1))*data.nz_, (blockid%ny)*data.ny_, ((blockid/ny)%nx)*data.nx_};
+	dataspace_ = H5Dget_space(datasetid_);
+	H5Sselect_hyperslab(dataspace_, H5S_SELECT_SET, offset, stride, count, block);
 }
 
 void HDF5IOStrategyB::SetDimStride(int nx, int ny, int nz) {
