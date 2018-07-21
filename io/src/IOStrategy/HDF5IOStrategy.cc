@@ -1,6 +1,4 @@
-#include "HDF5IOStrategy.h"
-
-//<-------------------------HDF5IOStrategy------------------------------->
+#include "HDF5IOStrategy.h" //<-------------------------HDF5IOStrategy------------------------------->
 HDF5IOStrategy::HDF5IOStrategy(const MPI_Comm& comm, int rank) : Strategy(), fileid_(0), filename_(""), rank_(rank) {
 	MPI_Comm_dup(comm, &comm_);
 }
@@ -42,6 +40,16 @@ int HDF5IOStrategy::Close() {
 
 void HDF5IOStrategy::SetDimStride(int nx, int ny, int nz) {
 	
+}
+
+void HDF5IOStrategy::SetDataspace(const hsize_t dimsf[3], const hsize_t chunk_dims[3]) {
+	
+}
+void HDF5IOStrategy::SetDatasetid(const hsize_t chunk_dims[3], const std::string& dataname) {
+
+}
+void HDF5IOStrategy::SetChunk(int blockid, const hsize_t chunk_dims[3], const hsize_t chunk_count[3]) {
+
 }
 
 //<-------------------------HDF5IOStrategy------------------------------->
@@ -112,16 +120,19 @@ int HDF5IOStrategyA::Close() {
 
 
 //<-------------------------SingleSharedFileOneWrites-------------------------------->
-HDF5IOStrategyB::HDF5IOStrategyB(const MPI_Comm& comm, int rank) : HDF5IOStrategy(comm, rank), globalx_(0), globaly_(0), globalz_(0) {
+HDF5IOStrategyB::HDF5IOStrategyB(const MPI_Comm& comm, int rank) : HDF5IOStrategy(comm, rank), nx_(0), ny_(0), nz_(0) {
 }
 
 //@override Write()
+//FIXME: need to change topo to nx ny nz and modify offset
 ssize_t HDF5IOStrategyB::Write(const Data_3D& data) {
 	double *pData = data.pData_;
 
 	hsize_t count[3], stride[3], block[3], offset[3];
-	hsize_t dimsf[3]{data.nx_*nx_, data.ny_*ny_, data.nz_*nz_};
-	hsize_t chunk_dims[3]{data.nx_, data.ny_, data.nz_};
+	//hsize_t dimsf[3]{data.nx_*nx_, data.ny_*ny_, data.nz_*nz_};
+	//hsize_t chunk_dims[3]{data.nx_, data.ny_, data.nz_};
+	hsize_t dimsf[3]{data.nz_*nz_, data.ny_*ny_, data.nx_*nx_};
+	hsize_t chunk_dims[3]{data.nz_, data.ny_, data.nx_};
 
 	hid_t filespace = H5Screate_simple(3, dimsf, NULL);
 	hid_t memspace  = H5Screate_simple(3, chunk_dims, NULL);
@@ -146,9 +157,13 @@ ssize_t HDF5IOStrategyB::Write(const Data_3D& data) {
 	block[2] = chunk_dims[2];
 
 	int block_id = data.blockid_;
-	offset[0] = block_id/(nx_+1) * data.nx_;
+//	offset[0] = block_id/(nx_+1) * data.nx_;
+//	offset[1] = block_id%(ny_) * data.ny_;
+//	offset[2] = (block_id/(ny_))%(nz_) * data.nz_;
+
+	offset[0] = block_id/(nz_+1) * data.nz_;
 	offset[1] = block_id%(ny_) * data.ny_;
-	offset[2] = (block_id/(ny_))%(nz_) * data.nz_;
+	offset[2] = (block_id/(ny_))%(nx_) * data.nx_;
 	
 	filespace = H5Dget_space(dataset_id);
 	H5Sselect_hyperslab(filespace, H5S_SELECT_SET, offset, stride, count, block);
@@ -213,12 +228,12 @@ int HDF5IOStrategyB::Close() {
 
 }
 
-void HDF5IOStrategy::SetDataspace(const int dimsf[3], const int chunk_dims[3]) {
+void HDF5IOStrategyB::SetDataspace(const hsize_t dimsf[3], const hsize_t chunk_dims[3]) {
 	dataspace_ = H5Screate_simple(3, dimsf, NULL);
 	chunkspace_ = H5Screate_simple(3, chunk_dims, NULL);
 }
 
-void HDF5IOStrategy::SetDatasetid(const int chunk_dims[3], const std::string& dataname) {
+void HDF5IOStrategyB::SetDatasetid(const hsize_t chunk_dims[3], const std::string& dataname) {
 	hid_t plist_id = H5Pcreate(H5P_DATASET_CREATE);
 	H5Pset_chunk(plist_id, 3, chunk_dims);
 	datasetid_ = H5Dcreate(fileid_, dataname.c_str(), H5T_NATIVE_DOUBLE, dataspace_, H5P_DEFAULT, plist_id, H5P_DEFAULT);
@@ -226,10 +241,10 @@ void HDF5IOStrategy::SetDatasetid(const int chunk_dims[3], const std::string& da
 }
 
 /*chunk 33 65 193, x = 2, y = 2, z = 3*/
-void HDF5IOStrategy::SetChunk(int blockid, const int chunk_dims[3], const chunk_count[3]) {
+void HDF5IOStrategyB::SetChunk(int blockid, const hsize_t chunk_dims[3], const hsize_t chunk_count[3]) {
 	hsize_t count[3]{1, 1, 1}, stride[3]{1, 1, 1}, block[3]{chunk_dims[0], chunk_dims[1], chunk_dims[2]};
 	int nx = chunk_count[0], ny = chunk_count[1], nz = chunk_count[2];
-	hsize_t offset[3]{(blockid/(nz+1))*data.nz_, (blockid%ny)*data.ny_, ((blockid/ny)%nx)*data.nx_};
+	hsize_t offset[3]{(blockid/(nz+1))*chunk_dims[2], (blockid%ny)*chunk_dims[1], ((blockid/ny)%nx)*chunk_dims[0]};
 	dataspace_ = H5Dget_space(datasetid_);
 	H5Sselect_hyperslab(dataspace_, H5S_SELECT_SET, offset, stride, count, block);
 }

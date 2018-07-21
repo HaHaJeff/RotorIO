@@ -1,5 +1,4 @@
-#ifndef HDF5IOSTRATEGY_H
-#define HDF5IOSTRATEGY_H
+#ifndef HDF5IOSTRATEGY_H #define HDF5IOSTRATEGY_H
 
 #include "hdf5.h"
 #include "Strategy.h"
@@ -47,7 +46,10 @@ public:
 	//@override Close();
 	virtual int     Close();
 
-	virtual void    SetDimStride(int nx, int ny, int nz);
+	virtual void SetDimStride(int nx, int ny, int nz);
+	virtual void SetDataspace(const hsize_t dimsf[3], const hsize_t chunk_dims[3]);
+	virtual void SetDatasetid(const hsize_t chunk_dims[3], const std::string& dataname);
+	virtual void SetChunk(int blockid, const hsize_t chunk_dims[3], const hsize_t chunk_count[3]);
 
 protected:
 	MPI_Comm comm_;
@@ -103,10 +105,10 @@ class HDF5IOStrategyB: public HDF5IOStrategy {
 	//@override Close();
 	virtual int     Close();
 
-	void SetDimStride(int nx, int ny, int nz);
-	void SetDataspace(const int dimsf[3], const int chunk_dims[3]);
-	void SetDatasetid(const int chunk_dims[3], const std::string& dataname);
-	void SetChunk(int blockid, const int dims[3]);
+	virtual void SetDimStride(int nx, int ny, int nz);
+	virtual void SetDataspace(const hsize_t dimsf[3], const hsize_t chunk_dims[3]);
+	virtual void SetDatasetid(const hsize_t chunk_dims[3], const std::string& dataname);
+	virtual void SetChunk(int blockid, const hsize_t chunk_dims[3], const hsize_t chunk_count[3]);
 
   private:
 	int nx_;
