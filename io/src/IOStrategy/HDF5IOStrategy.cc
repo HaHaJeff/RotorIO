@@ -143,7 +143,6 @@ ssize_t HDF5IOStrategyB::Write(const Data_3D& data) {
 	H5Pset_dxpl_mpio(plist_id, H5FD_MPIO_COLLECTIVE);
 	H5Dwrite(datasetid_, H5T_NATIVE_DOUBLE, chunkspace_, dataspace_, plist_id, pData);
 	H5Pclose(plist_id);
-
 /*
 	hsize_t count[3], stride[3], block[3], offset[3];
 	hsize_t dimsf[3]{data.nx_*nx_, data.ny_*ny_, data.nz_*nz_};
