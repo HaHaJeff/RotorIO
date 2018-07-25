@@ -1,4 +1,6 @@
-#include "HDF5IOStrategy.h" //<-------------------------HDF5IOStrategy------------------------------->
+#include "HDF5IOStrategy.h"
+
+//<-------------------------HDF5IOStrategy------------------------------->
 HDF5IOStrategy::HDF5IOStrategy(const MPI_Comm& comm, int rank) : Strategy(), fileid_(0), filename_(""), rank_(rank) {
 	MPI_Comm_dup(comm, &comm_);
 }
@@ -39,11 +41,11 @@ int HDF5IOStrategy::Close() {
 }
 
 void HDF5IOStrategy::SetDimStride(int nx, int ny, int nz) {
-	
+
 }
 
 void HDF5IOStrategy::SetDataspace(const hsize_t dimsf[3], const hsize_t chunk_dims[3]) {
-	
+
 }
 void HDF5IOStrategy::SetDatasetid(const hsize_t chunk_dims[3], const std::string& dataname) {
 
@@ -157,7 +159,7 @@ ssize_t HDF5IOStrategyB::Write(const Data_3D& data) {
 	H5Pset_chunk(plist_id, 3, chunk_dims);
 	std::string name = "/"+data.name_;
 	hid_t dataset_id = H5Dcreate(fileid_, name.c_str(), H5T_NATIVE_DOUBLE, filespace, H5P_DEFAULT, plist_id, H5P_DEFAULT);
-	
+
 	H5Pclose(plist_id);
 	H5Sclose(filespace);
 
@@ -178,8 +180,13 @@ ssize_t HDF5IOStrategyB::Write(const Data_3D& data) {
 
 	offset[0] = (block_id/(ny_))%(nx_) * data.nx_;
 	offset[1] = block_id%(ny_) * data.ny_;
+<<<<<<< HEAD
 	offset[2] = block_id/(nz_+1) * data.nz_;
 	
+=======
+	offset[2] = (block_id/(ny_))%(nx_) * data.nx_;
+
+>>>>>>> d141e3b45e247b05a3af0d90b4b36fc6b61f1748
 	filespace = H5Dget_space(dataset_id);
 	H5Sselect_hyperslab(filespace, H5S_SELECT_SET, offset, stride, count, block);
 
