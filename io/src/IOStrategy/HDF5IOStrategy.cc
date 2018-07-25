@@ -128,19 +128,35 @@ HDF5IOStrategyB::HDF5IOStrategyB(const MPI_Comm& comm, int rank) : HDF5IOStrateg
 ssize_t HDF5IOStrategyB::Write(const Data_3D& data) {
 	double *pData = data.pData_;
 
+	hsize_t chunk_dims[3]{data.nx_, data.ny_, data.nz_};
+	hsize_t chunk_count[3]{nx_, ny_, nz_};
+	hsize_t dimsf[3]{data.nx_*nx_, data.ny_*ny_, data.nz_*nz_};
+
+	int blockid = data.blockid_;
+	std::string dataname = "/"+data.name_;
+
+	SetDataspace(dimsf, chunk_dims);
+	SetDatasetid(chunk_dims, dataname);
+	SetChunk(blockid, chunk_dims, chunk_count);
+
+	hsize_t plist_id = H5Pcreate(H5P_DATASET_XFER);
+	H5Pset_dxpl_mpio(plist_id, H5FD_MPIO_COLLECTIVE);
+	H5Dwrite(datasetid_, H5T_NATIVE_DOUBLE, chunkspace_, dataspace_, plist_id, pData);
+	H5Pclose(plist_id);
+
+/*
 	hsize_t count[3], stride[3], block[3], offset[3];
-	//hsize_t dimsf[3]{data.nx_*nx_, data.ny_*ny_, data.nz_*nz_};
-	//hsize_t chunk_dims[3]{data.nx_, data.ny_, data.nz_};
+	hsize_t dimsf[3]{data.nx_*nx_, data.ny_*ny_, data.nz_*nz_};
+	hsize_t chunk_dims[3]{data.nx_, data.ny_, data.nz_};
 	hsize_t dimsf[3]{data.nz_*nz_, data.ny_*ny_, data.nx_*nx_};
 	hsize_t chunk_dims[3]{data.nz_, data.ny_, data.nx_};
 
 	hid_t filespace = H5Screate_simple(3, dimsf, NULL);
 	hid_t memspace  = H5Screate_simple(3, chunk_dims, NULL);
-	hid_t plist_id = H5Pcreate(H5P_DATASET_CREATE);
 
+	hid_t plist_id = H5Pcreate(H5P_DATASET_CREATE);
 	H5Pset_chunk(plist_id, 3, chunk_dims);
 	std::string name = "/"+data.name_;
-
 	hid_t dataset_id = H5Dcreate(fileid_, name.c_str(), H5T_NATIVE_DOUBLE, filespace, H5P_DEFAULT, plist_id, H5P_DEFAULT);
 	
 	H5Pclose(plist_id);
@@ -161,9 +177,9 @@ ssize_t HDF5IOStrategyB::Write(const Data_3D& data) {
 //	offset[1] = block_id%(ny_) * data.ny_;
 //	offset[2] = (block_id/(ny_))%(nz_) * data.nz_;
 
-	offset[0] = block_id/(nz_+1) * data.nz_;
+	offset[0] = (block_id/(ny_))%(nx_) * data.nx_;
 	offset[1] = block_id%(ny_) * data.ny_;
-	offset[2] = (block_id/(ny_))%(nx_) * data.nx_;
+	offset[2] = block_id/(nz_+1) * data.nz_;
 	
 	filespace = H5Dget_space(dataset_id);
 	H5Sselect_hyperslab(filespace, H5S_SELECT_SET, offset, stride, count, block);
@@ -176,6 +192,7 @@ ssize_t HDF5IOStrategyB::Write(const Data_3D& data) {
 	H5Sclose(filespace);
 	H5Sclose(memspace);
 	H5Pclose(plist_id);
+	*/
 
 	return 0;
 }
@@ -244,7 +261,7 @@ void HDF5IOStrategyB::SetDatasetid(const hsize_t chunk_dims[3], const std::strin
 void HDF5IOStrategyB::SetChunk(int blockid, const hsize_t chunk_dims[3], const hsize_t chunk_count[3]) {
 	hsize_t count[3]{1, 1, 1}, stride[3]{1, 1, 1}, block[3]{chunk_dims[0], chunk_dims[1], chunk_dims[2]};
 	int nx = chunk_count[0], ny = chunk_count[1], nz = chunk_count[2];
-	hsize_t offset[3]{(blockid/(nz+1))*chunk_dims[2], (blockid%ny)*chunk_dims[1], ((blockid/ny)%nx)*chunk_dims[0]};
+	hsize_t offset[3]{((blockid/ny)%nx)*chunk_dims[0], (blockid%ny)*chunk_dims[1], (blockid/(nz+1))*chunk_dims[2]};
 	dataspace_ = H5Dget_space(datasetid_);
 	H5Sselect_hyperslab(dataspace_, H5S_SELECT_SET, offset, stride, count, block);
 }
