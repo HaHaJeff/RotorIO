@@ -180,13 +180,10 @@ ssize_t HDF5IOStrategyB::Write(const Data_3D& data) {
 
 	offset[0] = (block_id/(ny_))%(nx_) * data.nx_;
 	offset[1] = block_id%(ny_) * data.ny_;
-<<<<<<< HEAD
 	offset[2] = block_id/(nz_+1) * data.nz_;
 	
-=======
 	offset[2] = (block_id/(ny_))%(nx_) * data.nx_;
 
->>>>>>> d141e3b45e247b05a3af0d90b4b36fc6b61f1748
 	filespace = H5Dget_space(dataset_id);
 	H5Sselect_hyperslab(filespace, H5S_SELECT_SET, offset, stride, count, block);
 
@@ -245,6 +242,9 @@ int HDF5IOStrategyB::Open(const std::string& filename) {
 int HDF5IOStrategyB::Close() {
 
 	filename_.clear();
+	H5Sclose(dataspace_);
+	H5Sclose(chunkspace_);
+	H5Dclose(datasetid_);
 	H5Fclose(fileid_);
 	fileid_ = 0;
 	return fileid_;
