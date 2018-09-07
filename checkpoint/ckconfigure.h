@@ -28,6 +28,8 @@ public:
 
 private:
     TiXmlDocument* config_;
+    TiXmlElement*  root_; 
+    TiXmlElement* properties_;
 };
 
 #endif

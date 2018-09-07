@@ -1,4 +1,4 @@
-CXX=mpic++
+CXX=g++
 CXXFLAGS+=-g -Wall -std=c++11
 LIBRARY=
 
