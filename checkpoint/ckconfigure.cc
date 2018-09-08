@@ -1,11 +1,18 @@
 #include "ckconfigure.h"
 #include <cstdlib>
 #include <stdio.h>
+#include <iostream>
 
 CKConfigure::CKConfigure(const char* filename) : config_(new TiXmlDocument()) {
-  config_->LoadFile(filename);
-  root_ = config_->RootElement();
-  properties_ = config_->FirstChildElement();
+  if (!config_->LoadFile(filename)) {
+    std::cerr << config_->ErrorDesc() << std::endl;
+    exit(-1);
+  }
+  if ((root_ = config_->RootElement()) == NULL) {
+    std::cerr << "Failed to load file: No root element." << std::endl;
+    exit(-1);
+  }
+  properties_ = root_->FirstChildElement();
 }
 
 CKConfigure::~CKConfigure() {
