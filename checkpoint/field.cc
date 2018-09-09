@@ -1,20 +1,16 @@
 #include "field.h"
-
-Field::Field(const TField& field) : field_(field) {}
-
-Field::Field(const Field& field) {}
-
-Field::Filed() : field_(NULL) {}
-
-Field&::operator(const Field& field) {
-    if (this->field_ != field.field_) {
-        
-    }
+#include <iostream>
+Field::Field(const TField& field) : field_(new FieldValue(field)){
 }
 
-Field::~Field() {
-    if (NULL != field_) {
-        Free(field_);
-    }
-    field_ = NULL;
+Field::FieldValue::FieldValue(const TField& value) : data(value) {
+}
+
+Field::FieldValue::FieldValue(const FieldValue& rhs) {
+    data = rhs.data;
+}
+
+Field::FieldValue::~FieldValue() {
+    Free(data);
+    std::cout << "~FieldValue" << std::endl;
 }

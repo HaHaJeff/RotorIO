@@ -27,17 +27,19 @@ private:
 template<class T>
 class RCPtr {
 public:
-    RCPtr(T* realptr = NULL);
+    RCPtr(T* realptr = nullptr);
     RCPtr(const RCPtr& rhs);
     ~RCPtr();
 
-    RCPtr& operator(const RCPtr& rhs);
+    RCPtr& operator=(const RCPtr& rhs);
     T* operator->() const;
     T& operator*() const;
 
 private:
     T* pointee_;
-    void Init()_;
+    void Init_();
 };
+
+#include "refcount_impl.h"
 
 #endif

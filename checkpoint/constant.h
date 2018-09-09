@@ -4,14 +4,14 @@
 #include <vector>
 #include "memory.h"
 
+// TConstant argument must call Malloc function
 class Constant {
 public:
-    using TConstant=std::vector<int>;
+    using TConstant=int*;
 public:
     Constant(const TConstant& constant) : constant_(constant) {}
-    Constant() {}
-    void ToFile(const char* filename);
-    void ToMemory(const char* filename);
+    Constant();
+    ~Constant();
 private:
     //v_cycle iter iteration time_step
     TConstant constant_;
