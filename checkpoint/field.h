@@ -9,10 +9,12 @@ class Field {
 public:
     using TField=double****;
 public:
-    Field(const TField& field) : field_(field) {}
-    Field() {}
-    void ToFile(const char* filename);
-    void ToMemory(const char* filename);
+    Field(const TField& field);
+    Field(const Field& field);
+    Field();
+    Field& operator=(const Field& field);
+    ~Field();
+    
 private:
     //q11 q12 q13 q14 q15 q16
     TField field_;
