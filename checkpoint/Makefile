@@ -11,6 +11,6 @@ TestCKConfigure : ckconfigure.cc TestCKConfigure.cc
 	@echo "Compiling $^ ==> $@..."
 	$(CXX) $^ -o $@ $(LIBRARY) $(INC_DIR) $(CXXFLAGS) 
 
-TestRefcount: field.cc TestRefcount.cc refcount.cc
+TestRefcount: field.cc TestRefcount.cc refcount.cc constant.cc
 	@echo "Compiling $^ ==> $@..."
 	$(CXX) $^ -o $@ $(LIBRARY) $(INC_DIR) $(CXXFLAGS) 

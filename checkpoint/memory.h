@@ -1,6 +1,9 @@
 #ifndef MEMORY_H
 #define MEMORY_H
+
 #include <string.h>
+#include <stdlib.h>
+
 template<class T>
 bool Malloc(T* &pArr,int size1)
 {
