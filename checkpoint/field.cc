@@ -1,16 +1,25 @@
 #include "field.h"
 #include <iostream>
-Field::Field(const TField& field) : field_(new FieldValue(field)){
+Field::Field(const TField& field) : field_(field){
 }
 
-Field::FieldValue::FieldValue(const TField& value) : data(value) {
+Field::~Field() {
+    if (field_ != nullptr) {
+        Free(field_);
+        std::cout<< "Free" << std::endl;
+    }
+    field_ = nullptr;
 }
 
-Field::FieldValue::FieldValue(const FieldValue& rhs) {
-    data = rhs.data;
+// need Copy?
+// solution: make copy task to caller
+const TField& Field::GetField() const {
+    return field_;
 }
 
-Field::FieldValue::~FieldValue() {
-    Free(data);
-    std::cout << "~FieldValue" << std::endl;
+RCField::RCField(const TField& field) : value_(new Field(field)) {
+}
+
+const TField& RCField::GetField() const {
+    return value_->GetField();
 }

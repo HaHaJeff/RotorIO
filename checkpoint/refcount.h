@@ -10,6 +10,11 @@ public:
     bool IsShareable() const;
     bool IsShared() const;
 
+
+// forbid object generate from stack
+// object must generate from heap, so make construct or deconstruct be proctect
+// can not make them be private, because it cause RCObject base class can not be
+// inherited.
 protected:
     RCObject();
     RCObject(const RCObject& rhs);
@@ -32,11 +37,19 @@ public:
     ~RCPtr();
 
     RCPtr& operator=(const RCPtr& rhs);
-    T* operator->() const;
-    T& operator*() const;
+    const T* operator->() const;
+    T* operator->();
+    const T& operator*() const;
+    T& operator*();
 
 private:
-    T* pointee_;
+    // Add an intermediate layer
+    struct CountHolder : public RCObject {
+        ~CountHolder() {delete pointee;}
+        T* pointee;
+    };
+    CountHolder *counter_;
+    void MakeCopy_();
     void Init_();
 };
 
