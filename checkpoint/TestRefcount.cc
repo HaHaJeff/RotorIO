@@ -10,6 +10,6 @@ int main()
 
   TConstant value_1;
   Malloc(value_1, 1);
-  RCConstant constant(value_1);
+  RCConstant constant(value_1, 1);
 
 }

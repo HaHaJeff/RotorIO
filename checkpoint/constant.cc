@@ -1,19 +1,31 @@
 #include "constant.h"
+#include <iostream>
 
-Constant::Constant(const TConstant& constant) : constant_(constant){}
+Constant::Constant(const TConstant& constant, int size) : constant_(constant, size){}
 
 Constant::~Constant() {
-    if (constant_ != nullptr) {
-        Free(constant_);
-    }
-    constant_ = nullptr;
 }
 
 const TConstant& Constant::GetConstant() const {
-    return constant_;
+    return constant_.constant;
 }
 
-RCConstant::RCConstant(const TConstant& constant) : value_(new Constant(constant)) {
+size_t Constant::GetSize() const {
+    return constant_.size;
+}
+
+Constant::InnerData::InnerData(const TConstant& constant, int size) : constant(constant), size(size) {
+}
+
+Constant::InnerData::~InnerData() {
+    if (constant != nullptr) {
+        Free(constant);
+        std::cout << "Free(constant)" << std::endl;
+    }
+    constant = nullptr;
+}
+
+RCConstant::RCConstant(const TConstant& constant, int size) : value_(new Constant(constant, size)) {
 }
 
 const TConstant& RCConstant::GetConstant() const {
