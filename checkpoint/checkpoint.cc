@@ -3,7 +3,7 @@
 
 
 Checkpoint::Checkpoint(Constant& constant, Field& field) : constant_(constant.GetConstant(), constant.GetSize()),field_(field.GetField(), field.GetInfo()) {}
- 
+
 const Constant& Checkpoint::GetConstant() {
     return *constant_;
 }
@@ -35,6 +35,6 @@ void Checkpoint::SaveField(Strategy& io) {
     int count = num * x * y * z;
     double* field = field_.GetField();
     Data_3D data(field, num*x, y, z, "1", block_id);
-    io.Lseek(block_id*count);
-    io.Write(data, true);
+    io.Lseek(block_id*count*sizeof(double));
+    io.Write(data, false);
 }
