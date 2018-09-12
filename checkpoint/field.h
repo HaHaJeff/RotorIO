@@ -1,7 +1,6 @@
 #ifndef FIELD_H
 #define FIELD_H
 
-#include "IOStrategy/HDF5IO.h"
 #include "memory.h"
 #include "refcount.h"
 
@@ -34,6 +33,7 @@ public:
     RCField(const TField& field, const std::vector<int>& info);
     const TField& GetField() const;
     const std::vector<int>& GetInfo() const;
+    Field& operator*();
 private:
     RCPtr<Field> value_;
 };

@@ -22,7 +22,7 @@ Field::InnerData::InnerData(const TField& t, const std::vector<int>& i) : field(
 
 Field::InnerData::~InnerData() {
     if (field != nullptr) {
-        Free(field);
+//        Free(field);
         std::cout << "Free(field)" << std::endl;
     }
     field = nullptr;
@@ -37,4 +37,8 @@ const TField& RCField::GetField() const {
 
 const std::vector<int>& RCField::GetInfo() const {
     return value_->GetInfo();
+}
+
+Field& RCField::operator*() {
+    return *value_;
 }

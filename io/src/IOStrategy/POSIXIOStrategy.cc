@@ -70,7 +70,7 @@ ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Write(const Data_3D& data) {
 
 ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Write(const Data_3D& data, bool formated) {
 	if(formated == false) return Write(data);
-	
+
 	double* ptr = data.pData_;
 
 	FILE* fPtr = fdopen(fd_, "w");
@@ -82,12 +82,12 @@ ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Write(const Data_3D& data, boo
 
 	int offset = 0;
 
-	
+
 	//TODO: pricision need to set correclly;
-	while (left > 0 && (fprintf(fPtr, "%.15lf %.15lf %.15lf", ptr[done], ptr[done+1], ptr[done+2]))){
+	while (left > 0 && (fprintf(fPtr, "%.15lf %.15lf %.15lf\n", ptr[done], ptr[done+1], ptr[done+2]))){
 		done += 3;
 		offset += done*sizeof(double);
-		left -= done;
+		left -= 3;
 	}
 
 	if (NULL != fPtr){
@@ -137,7 +137,7 @@ int POSIXIOStrategyOneFilePerProcessAllWrite::Open(const std::string& filename) 
 int POSIXIOStrategyOneFilePerProcessAllWrite::Close() {
 	int ret = 0;
 	filename_.clear();
-	
+
 	if (fd_ != -1) {
 		ret = close(fd_);
 	}

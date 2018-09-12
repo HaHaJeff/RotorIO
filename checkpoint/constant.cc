@@ -19,7 +19,7 @@ Constant::InnerData::InnerData(const TConstant& constant, int size) : constant(c
 
 Constant::InnerData::~InnerData() {
     if (constant != nullptr) {
-        Free(constant);
+       // Free(constant);
         std::cout << "Free(constant)" << std::endl;
     }
     constant = nullptr;
@@ -30,4 +30,8 @@ RCConstant::RCConstant(const TConstant& constant, int size) : value_(new Constan
 
 const TConstant& RCConstant::GetConstant() const {
     return value_->GetConstant();
+}
+
+Constant& RCConstant::operator*() {
+    return *value_;
 }

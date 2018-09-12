@@ -5,12 +5,16 @@ LIBRARY=-lpthread -L../io -lio -L../tinyxml -ltinyxml ../io/third_party/lib/libh
 
 INC_DIR=-I./include -I./src -I../io/include -I../tinyxml/include -I../io/third_party/include
 
-all: TestCKConfigure TestRefcount
+all: TestCKConfigure TestRefcount TestCheckpoint
 
 TestCKConfigure : ckconfigure.cc TestCKConfigure.cc
 	@echo "Compiling $^ ==> $@..."
 	$(CXX) $^ -o $@ $(LIBRARY) $(INC_DIR) $(CXXFLAGS) 
 
 TestRefcount: field.cc TestRefcount.cc refcount.cc constant.cc
+	@echo "Compiling $^ ==> $@..."
+	$(CXX) $^ -o $@ $(LIBRARY) $(INC_DIR) $(CXXFLAGS) 
+
+TestCheckpoint : field.cc refcount.cc constant.cc checkpoint.cc TestCheckpoint.cc
 	@echo "Compiling $^ ==> $@..."
 	$(CXX) $^ -o $@ $(LIBRARY) $(INC_DIR) $(CXXFLAGS) 
