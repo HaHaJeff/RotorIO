@@ -18,7 +18,17 @@ void Checkpoint::RestoreConstant(Strategy& io) {
 }
 
 void Checkpoint::RestoreField(Strategy& io) {
-
+    std::vector<int> info = field_.GetInfo();
+    int num = info[0];
+    int x = info[1];
+    int y = info[2];
+    int z = info[3];
+    int block_id = info[4];
+    int count = num * x * y * z;
+    double* field = field_.GetField();
+    Data_3D data(field, num*x, y, z, "1", block_id);
+    io.Lseek(block_id*count*sizeof(double));
+    io.Read(data);
 }
 
 void Checkpoint::SaveConstant(Strategy& io) {

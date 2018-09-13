@@ -103,7 +103,7 @@ ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Read(Data_3D& data) {
 	}
 
 	double *ptr = data.pData_;
-	int left = (data.nx_ - 1) * (data.ny_ - 1) * (data.nz_ - 1) * sizeof(double);
+	int left = (data.nx_) * (data.ny_) * (data.nz_) * sizeof(double);
 	int done = 0;
 	int offset = 0;
 
@@ -122,14 +122,14 @@ ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Read(Data_3D& data, bool forma
 
 //@override Lseek()
 off_t POSIXIOStrategyOneFilePerProcessAllWrite::Lseek(off_t off) {
-  lseek(fd_, off, SEEK_SET);
+  	lseek(fd_, off, SEEK_SET);
 	return 0;
 }
 
 //@override Open()
 int POSIXIOStrategyOneFilePerProcessAllWrite::Open(const std::string& filename) {
 	filename_ = filename;
-	fd_ = open(filename_.c_str(), O_CREAT | O_WRONLY, 0664);
+	fd_ = open(filename_.c_str(), O_CREAT | O_RDWR, 0664);
 	return fd_;
 }
 
