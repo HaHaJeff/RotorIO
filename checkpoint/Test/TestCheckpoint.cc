@@ -10,7 +10,9 @@ void Func(Constant& constant, Field& field) {
     POSIXIO io;
     Strategy* strategy = io.GetIOStrategy(static_cast<TYPE>(0));
     strategy->Open("test");
-    ck.RestoreField(*strategy);
+
+    //ck.RestoreField(*strategy);
+    ck.SaveField(*strategy);
 
     const Field& f= ck.GetField();
     double *p = f.GetField();
@@ -28,6 +30,17 @@ int main()
     double ****ptr;
     int a = 1;
     Malloc(ptr, 3,2,2,3);
+
+    for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 2; ++j) {
+        for (int k = 0; k < 2; ++k) {
+          for (int z = 0; z < 3; ++z) {
+            ptr[i][j][k][z] = a++;
+          }
+        }
+      }
+
+    }
 
     double ****ptr1;
     Malloc(ptr1, 3, 2, 2, 3);

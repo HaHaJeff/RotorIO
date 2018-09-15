@@ -17,7 +17,7 @@ public:
   void SaveConstant(Strategy& io);
   void SaveField(Strategy& io);
   const Constant& GetConstant();
-  const Field& GetField(); 
+  const Field& GetField();
 
 private:
   RCConstant constant_;
