@@ -24,6 +24,9 @@ public:
 
 	//@override Close();
 	virtual int     Close();
+
+	ssize_t Write(const int* data, int size);
+	ssize_t Read(int* data, int size);
 protected:
 	int fd_;
 	std::string filename_;
@@ -53,7 +56,6 @@ public:
 
 };
 
-
 class POSIXIOStrategySingleSharedFileOneWrites : public POSIXIOStrategy {
 public:
 	
@@ -78,7 +80,6 @@ public:
 
 };
 
-
 class POSIXIOStrategySingleSharedFileAllWrite : public POSIXIOStrategy {
 public:
 	
@@ -102,7 +103,6 @@ public:
 	virtual int     Close();
 
 };
-
 
 class POSIXIOStrategySingleSharedFileSubsetWrite : public POSIXIOStrategy {
 public:

@@ -57,7 +57,7 @@ POSIXIOStrategyOneFilePerProcessAllWrite::POSIXIOStrategyOneFilePerProcessAllWri
 ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Write(const Data_3D& data) {
 	double *ptr = data.pData_;
 
-	int left = (data.nx_) * (data.ny_) * (data.nz_) * sizeof(double);
+	int left = data.GetCount() * sizeof(double);
 	int done = 0;
 	int offset = 0;
 
@@ -103,7 +103,7 @@ ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Read(Data_3D& data) {
 	}
 
 	double *ptr = data.pData_;
-	int left = (data.nx_) * (data.ny_) * (data.nz_) * sizeof(double);
+	int left = data.GetCount() * sizeof(double);
 	int done = 0;
 	int offset = 0;
 

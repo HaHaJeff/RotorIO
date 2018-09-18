@@ -24,4 +24,7 @@ private:
   RCField    field_;
 };
 
+void SetCheckpoint(Constant& constant, Field& field);
+void Restart(Constant& constant, Field& field);
+
 #endif

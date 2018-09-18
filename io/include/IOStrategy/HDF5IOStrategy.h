@@ -46,7 +46,8 @@ public:
 	//@override Close();
 	virtual int     Close();
 
-	virtual void SetDimStride(int nx, int ny, int nz);
+	virtual void SetView(int block_id, const hsize_t dimsf[3], const hsize_t chunk_dims[3], const std::string& name);
+
 	virtual void SetDataspace(const hsize_t dimsf[3], const hsize_t chunk_dims[3]);
 	virtual void SetDatasetid(const hsize_t chunk_dims[3], const std::string& dataname);
 	virtual void SetChunk(int blockid, const hsize_t chunk_dims[3], const hsize_t chunk_count[3]);
@@ -56,6 +57,10 @@ protected:
 	hid_t fileid_;
 	std::string filename_;
 	int rank_;
+
+	hid_t datasetid_;
+	hid_t dataspace_;
+	hid_t chunkspace_;
 };
 
 //for OneFilePerProcessAllWrite
@@ -81,6 +86,9 @@ public:
 	virtual int     Close();
 
 private:
+//	hid_t datasetid_;
+//	hid_t dataspace_;
+//	hid_t chunkspace_;
 };
 
 //for SingleSharedFileAllWrite
@@ -105,18 +113,18 @@ class HDF5IOStrategyB: public HDF5IOStrategy {
 	//@override Close();
 	virtual int     Close();
 
-	virtual void SetDimStride(int nx, int ny, int nz);
-	virtual void SetDataspace(const hsize_t dimsf[3], const hsize_t chunk_dims[3]);
-	virtual void SetDatasetid(const hsize_t chunk_dims[3], const std::string& dataname);
-	virtual void SetChunk(int blockid, const hsize_t chunk_dims[3], const hsize_t chunk_count[3]);
+//	virtual void SetDimStride(int nx, int ny, int nz);
+//	virtual void SetDataspace(const hsize_t dimsf[3], const hsize_t chunk_dims[3]);
+//	virtual void SetDatasetid(const hsize_t chunk_dims[3], const std::string& dataname);
+//	virtual void SetChunk(int blockid, const hsize_t chunk_dims[3], const hsize_t chunk_count[3]);
 
   private:
-	int nx_;
-	int ny_;
-	int nz_;
-	hid_t datasetid_;
-	hid_t dataspace_;
-	hid_t chunkspace_;
+//	int nx_;
+//	int ny_;
+//	int nz_;
+//	hid_t datasetid_;
+//	hid_t dataspace_;
+//	hid_t chunkspace_;
 };
 
 //for SingleSharedFileOneWrites
