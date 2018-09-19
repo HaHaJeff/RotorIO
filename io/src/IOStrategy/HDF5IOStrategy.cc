@@ -253,6 +253,72 @@ ssize_t HDF5IOStrategyC::Write(const Data_3D& data, bool formated) {
 	return 0;
 }
 
+void HDF5IOStrategyC::DatasetSetChunks(int nCols, int size, int maxRows, hid_t plistDCreate) {
+	hsize_t cdims[2];
+	int nRows;
+
+	int nDims = 2;
+	if (nCols == 1) {
+		nDims = 1;
+	}
+
+//	if ()
+}
+
+ssize_t HDF5IOStrategyC::WriteVector(const std::vector<Data_3D>& data) {
+	char datasetName[80];
+	hsize_t dimsf[2];
+	hid_t fileSpace;
+	hid_t dsetID;
+	hid_t plistID;
+	hid_t plistDCreate;
+
+	int nProc = 432;
+	int numPoints = data[0].GetCount();
+	for (int i = 0; i < nProc; i++) {
+		//三维数据，二维存储
+		dimsf[0] = numPoints;
+		dimsf[1] = 3;
+		fileSpace = H5Screate_simple(2, dimsf, NULL);
+
+		plistID = H5Pcreate(H5P_LINK_CREATE);
+		H5Pset_create_intermediate_group(plistID, 1);
+
+		plistDCreate = H5Pcreate(H5P_DATASET_CREATE);
+		DatasetSetChunks(3, sizeof(double), numPoints, plistDCreate);
+
+		sprintf(datasetName, "MESH/processor%i/POINTS", i);
+
+		dsetID = H5Dcreate2(fileid_, datasetName, H5T_NATIVE_DOUBLE, fileSpace, plistID, plistDCreate, H5P_DEFAULT);
+
+		H5Dclose(dsetID);
+		H5Pclose(plistID);
+		H5Pclose(plistDCreate);
+		H5Sclose(fileSpace);
+	}
+	double pointList[numPoints][3];
+	double *x = data[0].pData_;
+	double *y = data[1].pData_;
+	double *z = data[2].pData_;
+	for (int i = 0; i < numPoints; i++) {
+		pointList[i][0] = x[i];
+		pointList[i][1] = y[i];
+		pointList[i][2] = z[i];
+	}
+
+
+	sprintf(datasetName, "MESH/processor%i/POINTS", data[0].blockid_);
+	dsetID = H5Dopen2(fileid_, datasetName, H5P_DEFAULT);
+
+	plistID = H5Pcreate(H5P_DATASET_XFER);
+	H5Pset_dxpl_mpio(plistID, H5FD_MPIO_COLLECTIVE);
+
+	H5Dwrite(dsetID, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, plistID, pointList);
+
+	H5Pclose(plistID);
+	H5Dclose(dsetID);
+}
+
 //@override Read()
 ssize_t HDF5IOStrategyC::Read(Data_3D& data) {
 	int count = data.GetCount();
@@ -275,8 +341,14 @@ off_t HDF5IOStrategyC::Lseek(off_t off) {
 
 //@override Open()
 int HDF5IOStrategyC::Open(const std::string& filename) {
+//	char dataFile[80] = "h5Data.h5";
 
 	filename_ = filename;
+	hid_t plistID = H5Pcreate(H5P_FILE_ACCESS);
+	H5Pset_fapl_mpio(plistID, MPI_COMM_WORLD, MPI_INFO_NULL);
+
+	fileid_ = H5Fcreate(filename.c_str(), H5F_ACC_CREAT, H5P_DEFAULT, plistID);
+	H5Pclose(plistID);
 	return 0;
 }
 
@@ -286,7 +358,8 @@ int HDF5IOStrategyC::Close() {
 	filename_.clear();
 	return 0;
 }
-//<-------------------------SingleSharedFileAllWrite-------------------------------->
+//<-------------------------SingleSharedFileOneWrite-------------------------------->
+
 
 
 //<-------------------------SingleSharedFileSubsetWrite-------------------------------->

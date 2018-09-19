@@ -1,22 +1,24 @@
-#ifndef HDF5IOSTRATEGY_H #define HDF5IOSTRATEGY_H
+#ifndef HDF5IOSTRATEGY_H
+#define HDF5IOSTRATEGY_H
 
 #include "hdf5.h"
 #include "Strategy.h"
 
 #include <memory>
+#include <vector>
 
 const int g_idim=3;
 
-struct HDF5Data{ 
+struct HDF5Data{
 
 	void SetDsetid(hid_t fileid);
 	void SetFilespace();
 	void SetMemspace();
-	
+
 	hid_t dsetid_;
 	hid_t filespace_;
 	hid_t memspace_;
-	
+
 	int globaldims_[g_idim];
 	int chunkdims_[g_idim];
 	int offset_[g_idim];
@@ -135,6 +137,8 @@ public:
   //@override Write()
   virtual ssize_t Write(const Data_3D& data);
   virtual ssize_t Write(const Data_3D& data, bool formated);
+  ssize_t WriteVector(const std::vector<Data_3D>& data);
+  void DatasetSetChunks(int nCols, int size, int maxRows, hid_t plistDCreate);
 
 	//@override Read()
 	virtual ssize_t Read(Data_3D& data);
