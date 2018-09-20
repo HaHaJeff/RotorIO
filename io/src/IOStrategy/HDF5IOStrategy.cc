@@ -1,4 +1,4 @@
-#include "HDF5IOStrategy.h" 
+#include "HDF5IOStrategy.h"
 //<-------------------------HDF5IOStrategy------------------------------->
 HDF5IOStrategy::HDF5IOStrategy(const MPI_Comm& comm, int rank) : Strategy(), fileid_(0), filename_(""), rank_(rank) {
 	MPI_Comm_dup(comm, &comm_);
@@ -275,11 +275,14 @@ ssize_t HDF5IOStrategyC::WriteVector(const std::vector<Data_3D>& data) {
 
 	int nProc = 432;
 	int numPoints = data[0].GetCount();
+
+  for (int j = 0; j < 3; ++j) {
 	for (int i = 0; i < nProc; i++) {
-		//三维数据，二维存储
-		dimsf[0] = numPoints;
-		dimsf[1] = 3;
-		fileSpace = H5Screate_simple(2, dimsf, NULL);
+
+		dimsf[0] = 17;
+		dimsf[1] = 33;
+    dimsf[2] = 65;
+		fileSpace = H5Screate_simple(3, dimsf, NULL);
 
 		plistID = H5Pcreate(H5P_LINK_CREATE);
 		H5Pset_create_intermediate_group(plistID, 1);
@@ -296,6 +299,9 @@ ssize_t HDF5IOStrategyC::WriteVector(const std::vector<Data_3D>& data) {
 		H5Pclose(plistDCreate);
 		H5Sclose(fileSpace);
 	}
+  }
+
+  /*
 	double pointList[numPoints][3];
 	double *x = data[0].pData_;
 	double *y = data[1].pData_;
@@ -305,18 +311,22 @@ ssize_t HDF5IOStrategyC::WriteVector(const std::vector<Data_3D>& data) {
 		pointList[i][1] = y[i];
 		pointList[i][2] = z[i];
 	}
+  */
 
 
-	sprintf(datasetName, "MESH/processor%i/POINTS", data[0].blockid_);
+  for (int i = 0; i < 3; i++) {
+
+	sprintf(datasetName, "MESH/processor%i/%s", data[0].blockid_, data[i].name_);
 	dsetID = H5Dopen2(fileid_, datasetName, H5P_DEFAULT);
 
 	plistID = H5Pcreate(H5P_DATASET_XFER);
 	H5Pset_dxpl_mpio(plistID, H5FD_MPIO_COLLECTIVE);
 
-	H5Dwrite(dsetID, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, plistID, pointList);
+	H5Dwrite(dsetID, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, plistID, data[i].pData_);
 
 	H5Pclose(plistID);
 	H5Dclose(dsetID);
+  }
 }
 
 //@override Read()
