@@ -54,10 +54,9 @@ public:
 	virtual void SetDatasetid(const hsize_t chunk_dims[3], const std::string& dataname);
 	virtual void SetChunk(int blockid, const hsize_t chunk_dims[3], const hsize_t chunk_count[3]);
 
-
-  //specific for HDF5IOStrategyC
-  virtual ssize_t WriteVector(const std::vector<Data_3D>& data) {  }
-  virtual void DatasetSetChunks(int nCols, int size, int maxRows, hid_t plistDCreate) {  }
+	// specific for HDF5IOStrategyC
+  	virtual ssize_t WriteVector(const std::vector<Data_3D>& data, int dims[3], int nProc) {}
+  	virtual void DatasetSetChunks(int nCols, int size, int maxRows, hid_t plistDCreate) {}
 
 protected:
 	MPI_Comm comm_;
@@ -142,7 +141,7 @@ public:
   //@override Write()
   virtual ssize_t Write(const Data_3D& data);
   virtual ssize_t Write(const Data_3D& data, bool formated);
-  ssize_t WriteVector(const std::vector<Data_3D>& data);
+  ssize_t WriteVector(const std::vector<Data_3D>& data, int dims[3], int nProc);
   void DatasetSetChunks(int nCols, int size, int maxRows, hid_t plistDCreate);
 
 	//@override Read()

@@ -21,7 +21,8 @@ OBJS=$(patsubst %.cc, $(OBJ_DIR)/%.o, $(notdir $(SRCS)))
 
 LIB=libio.a
 
-all: init $(OBJFILES) $(TARGET_OBJS) $(LIB) TestAtomic TestThread TestMPIIO TestPOSIXIO TestHDF5IO
+all: init $(OBJFILES) $(TARGET_OBJS) $(LIB)
+#TestAtomic TestThread TestMPIIO TestPOSIXIO TestHDF5IO
 
 $(OBJFILES):%.o:%.cc
 	@echo "Compiling $^ ==> $@..."
