@@ -20,7 +20,7 @@ public:
     struct InnerData {
         //q11 q12 q13 q14 q15 q16
         TField field;
-        //erver dim infomation and block_id
+        //num, dim infomation and block_id
         std::vector<int> info;
         InnerData(const TField& t, const std::vector<int>& info); 
         ~InnerData();
