@@ -29,6 +29,7 @@ class RCConstant {
 public:
     RCConstant(const TConstant& constant, int size);
     const TConstant& GetConstant() const;
+    size_t GetSize() const;
     Constant& operator*();
 private:
     RCPtr<Constant> value_;

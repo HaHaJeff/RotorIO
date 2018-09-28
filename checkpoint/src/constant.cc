@@ -35,3 +35,7 @@ const TConstant& RCConstant::GetConstant() const {
 Constant& RCConstant::operator*() {
     return *value_;
 }
+
+size_t RCConstant::GetSize() const {
+    return value_->GetSize();
+}

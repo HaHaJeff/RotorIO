@@ -2,7 +2,7 @@
 #include "IOStrategy/Data.h"
 
 
-Checkpoint::Checkpoint(Constant& constant, Field& field) : constant_(constant.GetConstant(), constant.GetSize()),field_(field.GetField(), field.GetInfo()) {}
+Checkpoint::Checkpoint(Constant& constant, Field& field, int group) : constant_(constant.GetConstant(), constant.GetSize()),field_(field.GetField(), field.GetInfo()), group_(group) {}
 
 const Constant& Checkpoint::GetConstant() {
     return *constant_;
@@ -33,6 +33,20 @@ void Checkpoint::RestoreField(Strategy& io) {
 
 void Checkpoint::SaveConstant(Strategy& io) {
 
+    int block_id = field_.GetInfo()[4];
+    int count = constant_.GetSize();
+    double* cst = new double[count];
+    TConstant constant = constant_.GetConstant();
+
+    for (int i = 0; i < count; i++) {
+        cst[i] = static_cast<double>(constant[i]);
+    }
+
+    Data_3D data(cst, count, block_id, "");
+    io.Lseek(block_id*count*sizeof(double));
+    io.Write(data, true); 
+    delete[] cst;
+    cst = nullptr;
 }
 
 void Checkpoint::SaveField(Strategy& io) {
@@ -46,7 +60,7 @@ void Checkpoint::SaveField(Strategy& io) {
     double* field = field_.GetField();
     Data_3D data(field, num*x* y* z, block_id, "");
     io.Lseek(block_id*count*sizeof(double));
-    io.Write(data, false);
+    io.Write(data, true);
 }
 
 void SetCheckpoint(Constant& constant, Field& field) {
@@ -57,8 +71,11 @@ void SetCheckpoint(Constant& constant, Field& field) {
     char ckcst[15];
     int block_id = field.GetInfo()[4];
 
-    char* tmpfld = tmpnam(NULL);
-    char* tmpcst = tmpnam(NULL);
+    char tmpfld[15];
+    char tmpcst[18];
+
+    snprintf(tmpfld, sizeof(tmpfld), "tmp_field_%02d", block_id);
+    snprintf(tmpcst, sizeof(tmpcst), "tmp_constant_%02d", block_id);
 
     // save field information
     snprintf(ckfld, sizeof(ckfld), "ck_field_%02d", block_id);
