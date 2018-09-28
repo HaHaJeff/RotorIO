@@ -10,6 +10,10 @@ const TConstant& Constant::GetConstant() const {
     return constant_.constant;
 }
 
+TConstant& Constant::GetConstant() {
+    return constant_.constant;
+}
+
 size_t Constant::GetSize() const {
     return constant_.size;
 }
@@ -29,6 +33,10 @@ RCConstant::RCConstant(const TConstant& constant, int size) : value_(new Constan
 }
 
 const TConstant& RCConstant::GetConstant() const {
+    return value_->GetConstant();
+}
+
+TConstant& RCConstant::GetConstant(){
     return value_->GetConstant();
 }
 

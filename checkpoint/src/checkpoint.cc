@@ -2,7 +2,9 @@
 #include "IOStrategy/Data.h"
 
 
-Checkpoint::Checkpoint(Constant& constant, Field& field, int group) : constant_(constant.GetConstant(), constant.GetSize()),field_(field.GetField(), field.GetInfo()), group_(group) {}
+Checkpoint::Checkpoint(Constant& constant, Field& field, int group) :
+  constant_(constant.GetConstant(), constant.GetSize()),
+  field_(field.GetField(), field.GetInfo()), group_(group) {}
 
 const Constant& Checkpoint::GetConstant() {
     return *constant_;
@@ -14,7 +16,19 @@ const Field& Checkpoint::GetField() {
 
 // before write or read, need set file view
 void Checkpoint::RestoreConstant(Strategy& io) {
+    int block_id = field_.GetInfo()[4];
+    int count = constant_.GetSize();
+    double* cst = new double[count];
+    Data_3D data(cst, count, block_id, "");
+    io.Lseek(block_id*count*sizeof(double));
+    io.Read(data, true);
+    TConstant& constant = constant_.GetConstant();
+    for (int i = 0; i < count; i++) {
+        constant[i] = static_cast<int>(cst[i]);
+    }
 
+    delete[] cst;
+    cst = nullptr;
 }
 
 void Checkpoint::RestoreField(Strategy& io) {
@@ -27,7 +41,7 @@ void Checkpoint::RestoreField(Strategy& io) {
     int count = num * x * y * z;
     double* field = field_.GetField();
     Data_3D data(field, num*x*y*z, block_id, "");
-    io.Lseek(block_id*count*sizeof(double));
+    io.Lseek(block_id%group_*count*sizeof(double));
     io.Read(data);
 }
 
@@ -44,7 +58,7 @@ void Checkpoint::SaveConstant(Strategy& io) {
 
     Data_3D data(cst, count, block_id, "");
     io.Lseek(block_id*count*sizeof(double));
-    io.Write(data, true); 
+    io.Write(data, true);
     delete[] cst;
     cst = nullptr;
 }
@@ -63,8 +77,8 @@ void Checkpoint::SaveField(Strategy& io) {
     io.Write(data, true);
 }
 
-void SetCheckpoint(Constant& constant, Field& field) {
-    Checkpoint ck(constant, field);
+void SetCheckpoint(Constant& constant, Field& field, int group) {
+    Checkpoint ck(constant, field, group);
     POSIXIO io;
     Strategy* strategy = io.GetIOStrategy(static_cast<TYPE>(0));
     char ckfld[12];
