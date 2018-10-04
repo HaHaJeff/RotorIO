@@ -1,5 +1,6 @@
 #ifndef REFCOUNT_H
 #define REFCOUNT_H
+#include <iostream>
 
 class RCObject {
 public:
@@ -45,7 +46,10 @@ public:
 private:
     // Add an intermediate layer
     struct CountHolder : public RCObject {
-        ~CountHolder() {delete pointee;}
+        ~CountHolder() {
+           // std::cout << "~CountHolder" << std::endl;
+            delete pointee;
+        }
         T* pointee;
     };
     CountHolder *counter_;

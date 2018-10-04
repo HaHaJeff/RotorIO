@@ -11,7 +11,7 @@
 class Checkpoint {
 public:
   //Constant: int* size, Field: double*, vector<int>(x,y,z,k,block_id)
-  Checkpoint(Constant& constant, Field& field, int group);
+  Checkpoint(RCConstant& constant, RCField& field, int group);
   void RestoreConstant(Strategy& io);
   void RestoreField(Strategy& io);
   void SaveConstant(Strategy& io);
@@ -25,7 +25,7 @@ private:
   int group_;
 };
 
-void SetCheckpoint(Constant& constant, Field& field, int group);
-void Restart(Constant& constant, Field& field, int group);
+void SetCheckpoint(RCConstant& constant, RCField& field, int group);
+void Restart(RCConstant& constant, RCField& field, int group);
 
 #endif

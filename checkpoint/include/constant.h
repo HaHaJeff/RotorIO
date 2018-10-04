@@ -26,6 +26,8 @@ private:
     InnerData constant_;
 };
 
+// sequence of deconstruct
+// RCPtr --> Constant -> RCObject
 class RCConstant {
 public:
     RCConstant(const TConstant& constant, int size);

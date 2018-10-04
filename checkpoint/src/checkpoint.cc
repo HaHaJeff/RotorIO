@@ -1,9 +1,9 @@
 #include "checkpoint.h"
 #include "IOStrategy/Data.h"
 
-Checkpoint::Checkpoint(Constant& constant, Field& field, int group) :
-  constant_(constant.GetConstant(), constant.GetSize()),
-  field_(field.GetField(), field.GetInfo()), group_(group) {}
+Checkpoint::Checkpoint(RCConstant& constant, RCField& field, int group) :
+  constant_(constant),
+  field_(field), group_(group) {}
 
 const Constant& Checkpoint::GetConstant() {
     return *constant_;
@@ -76,7 +76,7 @@ void Checkpoint::SaveField(Strategy& io) {
     io.Write(data);
 }
 
-void SetCheckpoint(Constant& constant, Field& field, int group) {
+void SetCheckpoint(RCConstant& constant, RCField& field, int group) {
     Checkpoint ck(constant, field, group);
     POSIXIO io;
     Strategy* strategy = io.GetIOStrategy(static_cast<TYPE>(0));
@@ -108,7 +108,7 @@ void SetCheckpoint(Constant& constant, Field& field, int group) {
     rename(tmpcst, ckcst);
 }
 
-void Restart(Constant& constant, Field& field, int group) {
+void Restart(RCConstant& constant, RCField& field, int group) {
     Checkpoint ck(constant, field, group);
     POSIXIO io;
     Strategy* strategy = io.GetIOStrategy(static_cast<TYPE>(0));

@@ -4,7 +4,7 @@
 #include <string.h>
 #include <thread>
 
-void Func(Constant& constant, Field& field) {
+void Func(RCConstant& constant, RCField& field) {
   /*
     Checkpoint ck(constant, field, 1);
     POSIXIO io;
@@ -19,9 +19,8 @@ void Func(Constant& constant, Field& field) {
 
     Restart(constant, field, 1);
 
-    const Field& f= field;
-    double *p = f.GetField();
-    std::vector<int> info = f.GetInfo();
+    double *p = field.GetField();
+    std::vector<int> info = field.GetInfo();
 
     std::cout << std::this_thread::get_id() << std::endl;
     for (int i = 0; i < info[0]*info[1]*info[2]*info[3]; ++i) {
@@ -30,10 +29,9 @@ void Func(Constant& constant, Field& field) {
 
     std::cout << "block_id: " << info[4] << std::endl;
 
-    const Constant& c = constant;
-    int *p1 = c.GetConstant();
+    int *p1 = constant.GetConstant();
 
-    for (int i = 0; i < c.GetSize(); i++) {
+    for (int i = 0; i < constant.GetSize(); i++) {
       std::cout << p1[i] << std::endl;
     }
 }
@@ -60,10 +58,10 @@ int main()
     memcpy(&ptr1[0][0][0][0], &ptr[0][0][0][0], 3*2*2*3*sizeof(double));
 
     std::vector<int> info = {3,2,2,3,0};
-    Field field(&ptr[0][0][0][0],info);
+    RCField field(&ptr[0][0][0][0],info);
 
     std::vector<int> info1 = {3,2,2,3,1};
-    Field field1(&ptr1[0][0][0][0],info1);
+    RCField field1(&ptr1[0][0][0][0],info1);
 
     int *iPtr, *iPtr1;
     Malloc(iPtr, 3);
@@ -73,8 +71,8 @@ int main()
   //    iPtr[i] = i;
  //     iPtr1[i] = i;
     }
-    Constant constant(iPtr, 3);
-    Constant constant1(iPtr1, 3);
+    RCConstant constant(iPtr, 3);
+    RCConstant constant1(iPtr1, 3);
 
     // if Func do not add std::ref
     std::thread t1(Func, std::ref(constant), std::ref(field));
