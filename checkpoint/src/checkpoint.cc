@@ -1,7 +1,6 @@
 #include "checkpoint.h"
 #include "IOStrategy/Data.h"
 
-
 Checkpoint::Checkpoint(Constant& constant, Field& field, int group) :
   constant_(constant.GetConstant(), constant.GetSize()),
   field_(field.GetField(), field.GetInfo()), group_(group) {}
@@ -18,16 +17,17 @@ const Field& Checkpoint::GetField() {
 void Checkpoint::RestoreConstant(Strategy& io) {
     int block_id = field_.GetInfo()[4];
     int count = constant_.GetSize();
-    double* cst = new double[count];
+    double* cst = nullptr;
+    Malloc(cst, count);
     Data_3D data(cst, count, block_id, "");
-    io.Lseek(block_id*count*sizeof(double));
-    io.Read(data, true);
+    io.Lseek(block_id%group_*count*sizeof(double));
+    io.Read(data);
     TConstant& constant = constant_.GetConstant();
     for (int i = 0; i < count; i++) {
         constant[i] = static_cast<int>(cst[i]);
     }
 
-    delete[] cst;
+    Free(cst);
     cst = nullptr;
 }
 
@@ -46,7 +46,6 @@ void Checkpoint::RestoreField(Strategy& io) {
 }
 
 void Checkpoint::SaveConstant(Strategy& io) {
-
     int block_id = field_.GetInfo()[4];
     int count = constant_.GetSize();
     double* cst = new double[count];
@@ -57,8 +56,8 @@ void Checkpoint::SaveConstant(Strategy& io) {
     }
 
     Data_3D data(cst, count, block_id, "");
-    io.Lseek(block_id*count*sizeof(double));
-    io.Write(data, true);
+    io.Lseek(block_id%group_*count*sizeof(double));
+    io.Write(data);
     delete[] cst;
     cst = nullptr;
 }
@@ -74,7 +73,7 @@ void Checkpoint::SaveField(Strategy& io) {
     double* field = field_.GetField();
     Data_3D data(field, num*x* y* z, block_id, "");
     io.Lseek(block_id*count*sizeof(double));
-    io.Write(data, true);
+    io.Write(data);
 }
 
 void SetCheckpoint(Constant& constant, Field& field, int group) {
@@ -109,6 +108,23 @@ void SetCheckpoint(Constant& constant, Field& field, int group) {
     rename(tmpcst, ckcst);
 }
 
-void Restart(Constant& constant, Field& field) {
+void Restart(Constant& constant, Field& field, int group) {
+    Checkpoint ck(constant, field, group);
+    POSIXIO io;
+    Strategy* strategy = io.GetIOStrategy(static_cast<TYPE>(0));
+    char ckfld[12];
+    char ckcst[15];
+    int block_id = field.GetInfo()[4];
 
+    // save field information
+    snprintf(ckfld, sizeof(ckfld), "ck_field_%02d", block_id);
+    strategy->Open(ckfld);
+    ck.RestoreField(*strategy);
+    strategy->Close();
+
+    // save constant information
+    snprintf(ckcst, sizeof(ckcst), "ck_constant_%02d", block_id);
+    strategy->Open(ckcst);
+    ck.RestoreConstant(*strategy);
+    strategy->Close();
 }
