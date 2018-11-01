@@ -13,6 +13,7 @@ public:
     Constant(const TConstant& constant, int size);
     ~Constant();
     const TConstant& GetConstant() const;
+    TConstant& GetConstant();
     size_t GetSize() const;
 private:
     struct InnerData {
@@ -29,6 +30,8 @@ class RCConstant {
 public:
     RCConstant(const TConstant& constant, int size);
     const TConstant& GetConstant() const;
+    TConstant& GetConstant();
+    size_t GetSize() const;
     Constant& operator*();
 private:
     RCPtr<Constant> value_;

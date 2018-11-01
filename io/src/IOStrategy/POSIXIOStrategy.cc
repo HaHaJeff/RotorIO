@@ -79,14 +79,12 @@ ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Write(const Data_3D& data, boo
 
 	int left = data.GetCount();
 	int done = 0;
-
 	int offset = 0;
-
 
 	//TODO: pricision need to set correclly;
 	while (left > 0 && (fprintf(fPtr, "%.15lf %.15lf %.15lf\n", ptr[done], ptr[done+1], ptr[done+2]))){
-		done += 3;
-		offset += done*sizeof(double);
+    done += 3;
+		offset += 3;
 		left -= 3;
 	}
 
@@ -117,7 +115,34 @@ ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Read(Data_3D& data) {
 
 //@override Read()
 ssize_t POSIXIOStrategyOneFilePerProcessAllWrite::Read(Data_3D& data, bool formated) {
-	return 0;
+
+	if(formated == false) return Read(data);
+
+	double* ptr = data.pData_;
+
+	FILE* fPtr = fdopen(fd_, "r");
+
+	assert(ptr != NULL);
+
+	int left = data.GetCount();
+	int done = 0;
+	int offset = 0;
+
+	//TODO: pricision need to set correclly;
+	while (left > 0 && (done = fscanf(fPtr, "%.15lf %.15lf %.15lf\n", &ptr[done], &ptr[done+1], &ptr[done+2]))){
+    if (EOF == done) {
+      perror("read");
+      exit(-1);
+    }
+		done += done;
+		offset += done;
+		left -= done;
+	}
+
+	if (NULL != fPtr){
+		fclose(fPtr);
+	}
+	return offset;
 }
 
 //@override Lseek()

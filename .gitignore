@@ -2,7 +2,7 @@
 calc/
 io/bin/
 io/obj/
-io/Test/
+# io/Test/
 io/libio.a/
 io/MakefileBak/
 LogInfo.log
