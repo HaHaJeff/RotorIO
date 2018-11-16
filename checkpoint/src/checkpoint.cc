@@ -82,7 +82,7 @@ void SetCheckpoint(RCConstant& constant, RCField& field, int group) {
     Strategy* strategy = io.GetIOStrategy(static_cast<TYPE>(0));
     char ckfld[12];
     char ckcst[15];
-    int block_id = field.GetInfo()[4];
+    int block_id = field.GetInfo()[4]/group;
 
     char tmpfld[15];
     char tmpcst[18];
@@ -114,7 +114,7 @@ void Restart(RCConstant& constant, RCField& field, int group) {
     Strategy* strategy = io.GetIOStrategy(static_cast<TYPE>(0));
     char ckfld[12];
     char ckcst[15];
-    int block_id = field.GetInfo()[4];
+    int block_id = field.GetInfo()[4]/group;
 
     // save field information
     snprintf(ckfld, sizeof(ckfld), "ck_field_%02d", block_id);

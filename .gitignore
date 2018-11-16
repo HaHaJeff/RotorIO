@@ -2,8 +2,12 @@
 calc/
 io/bin/
 io/obj/
-# io/Test/
-io/libio.a/
+io/Test/
+io/libio.a
 io/MakefileBak/
+checkpoint/bin/
+checkpoint/Test/
+checkpoint/obj/
+checkpoint/libck.a
 LogInfo.log
 io_bak/

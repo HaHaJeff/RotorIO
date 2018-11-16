@@ -23,7 +23,6 @@ Field::InnerData::InnerData(const TField& t, const std::vector<int>& i) : field(
 Field::InnerData::~InnerData() {
     if (field != nullptr) {
         Free(field);
-       // std::cout << "Free(field)" << std::endl;
     }
     field = nullptr;
 }
