@@ -72,7 +72,7 @@ void Checkpoint::SaveField(Strategy& io) {
     int count = num * x * y * z;
     double* field = field_.GetField();
     Data_3D data(field, num*x* y* z, block_id, "");
-    io.Lseek(block_id*count*sizeof(double));
+    io.Lseek(block_id%group_*count*sizeof(double));
     io.Write(data);
 }
 

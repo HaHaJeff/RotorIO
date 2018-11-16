@@ -1,6 +1,5 @@
 CXX=g++
 CXXFLAGS+=-g -Wall -std=c++11
-LIBRARY=
 
 INC_DIR=-I./include
 
@@ -18,7 +17,7 @@ all: init $(OBJFILES) $(LIB)
 
 $(OBJFILES):%.o:%.cpp
 	@echo "Compiling $^ ==> $@..."
-	$(CXX) -c $^ -o $(OBJ_DIR)/$(notdir $@) $(LIBRARY) $(INC_DIR) $(CXXFLAGS) 
+	$(CXX) -c $^ -o $(OBJ_DIR)/$(notdir $@) $(INC_DIR) $(CXXFLAGS) 
 
 $(LIB) : $(OBJS) 
 	rm -f $@

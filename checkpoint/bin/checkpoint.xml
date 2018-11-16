@@ -1,9 +1,0 @@
-<config>
-<properties
-    frequent="10"
-    group_size="12"
-    block_x="192"
-    block_y="64"
-    block_z="32">
-</properties>
-</config>

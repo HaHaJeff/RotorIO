@@ -344,23 +344,28 @@ ssize_t HDF5IOStrategyC::WriteVector(const std::vector<Data_3D>& data, int dims[
 		}
 	}
 
-
+/*
 	if (rank_ == 0) {
 		std::cout << "start write" << std::endl;
 	}
+	*/
 
 	for (int i = 0; i < data.size(); i++ ) {
 		sprintf(datasetName, "Mesh/%s", data[i].name_.c_str());
+		/*
 		if (rank_ == 0) {
 			std::cout << "start open " << datasetName << std::endl;
 		}
+		*/
 		dsetID = H5Dopen2(fileid_, datasetName, H5P_DEFAULT);
 
 		plistID = H5Pcreate(H5P_DATASET_XFER);
 		H5Pset_dxpl_mpio(plistID, H5FD_MPIO_COLLECTIVE);
+		/*
 		if (rank_ == 0) {
 			std::cout << "start write " << datasetName << std::endl;
 		}
+		*/
 		H5Dwrite(dsetID, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, plistID, data[i].pData_);
 
 		H5Pclose(plistID);
