@@ -70,6 +70,7 @@ ssize_t MPIIOStrategyA::Write(const Data_3D& data) {
 	int count = data.GetCount();
 	double *pData = data.pData_;
 	ssize_t ret = MPI_File_write_all(fh_, pData, count, MPI_DOUBLE, NULL);
+//	MPI_File_sync(fh_);
 	if (ret != MPI_SUCCESS) fprintf(stderr, "write filename: %s\n, strerror: %s\n, ret: %d\n", filename_.c_str(), strerror(errno), ret);
 	return ret;
 }
@@ -97,7 +98,7 @@ ssize_t MPIIOStrategyA::Read(Data_3D& data, bool formated) {
 
 //@override Lseek()
 off_t MPIIOStrategyA::Lseek(off_t off) {
-
+	MPI_File_seek(fh_, (MPI_Offset)off, MPI_SEEK_SET);
 	return 0;
 }
 

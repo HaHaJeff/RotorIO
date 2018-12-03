@@ -7,6 +7,7 @@ void RCObject::AddReference() {
 
 void RCObject::RemoveReference() {
     if (--refcount_ == 0) {
+    //    std::cout << "delete this" << std::endl;
         delete this;
     }
 }
@@ -34,5 +35,6 @@ RCObject& RCObject::operator=(const RCObject& rhs) {
 }
 
 RCObject::~RCObject() {
+ // std::cout << "~RCObjecet" << std::endl;
 }
 

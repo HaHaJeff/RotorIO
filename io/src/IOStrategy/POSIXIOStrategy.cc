@@ -154,7 +154,7 @@ off_t POSIXIOStrategyOneFilePerProcessAllWrite::Lseek(off_t off) {
 //@override Open()
 int POSIXIOStrategyOneFilePerProcessAllWrite::Open(const std::string& filename) {
 	filename_ = filename;
-	fd_ = open(filename_.c_str(), O_CREAT | O_RDWR, 0664);
+	fd_ = open(filename_.c_str(), O_CREAT | O_RDWR | O_TRUNC, 0664);
 	return fd_;
 }
 

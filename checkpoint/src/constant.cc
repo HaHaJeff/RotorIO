@@ -23,7 +23,9 @@ Constant::InnerData::InnerData(const TConstant& constant, int size) : constant(c
 
 Constant::InnerData::~InnerData() {
     if (constant != nullptr) {
+       // Free(constant);
        delete[] constant;
+      // std::cout << "Free(constant)" << std::endl;
     }
     constant = nullptr;
 }

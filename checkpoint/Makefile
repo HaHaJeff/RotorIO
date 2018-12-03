@@ -1,7 +1,7 @@
 CXX=mpicxx
 CXXFLAGS+=-g -w -std=c++11 -fopenmp 
 
-LIBRARY=-lpthread -L../io -lio -L../tinyxml -ltinyxml -lz -ldl -lm
+LIBRARY=-lpthread -L../io -lio -L../tinyxml -ltinyxml ../io/third_party/lib/libhdf5.a ../io/third_party/lib/libhdf5_hl.a -lz -ldl -lm
 
 INC_DIR=-I./include -I../io/include -I../tinyxml/include -I../io/third_party/include
 
@@ -26,11 +26,11 @@ all: init $(OBJFILES) $(LIB) $(TARGET_OBJS) TestCheckpoint TestCKConfigure TestR
 
 $(OBJFILES): %.o:%.cc
 	@echo "Compilinh $^ ==> $@..."
-	$(CXX) -c $^ -o $(OBJ_DIR)/$(notdir $@) $(INC_DIR) $(CXXFLAGS)
+	$(CXX) -c $^ -o $(OBJ_DIR)/$(notdir $@) $(LIBRARY) $(INC_DIR) $(CXXFLAGS)
 
 $(TARGET_OBJS):%.o:%.cc
 	@echo "Compiling $^ ==> $@..."
-	$(CXX) -c $^ -o $(TEST_OBJ_DIR)/$(notdir $@) $(INC_DIR) $(CXXFLAGS)
+	$(CXX) -c $^ -o $(TEST_OBJ_DIR)/$(notdir $@) $(LIBRARY) $(INC_DIR) $(CXXFLAGS)
 
 $(LIB) : $(OBJS)
 	rm -f $@
@@ -55,4 +55,4 @@ init:
 
 .PHONY : clean
 clean :
-	-rm $(OBJ_DIR)/* $(BIN_DIR)/* $(TEST_OBJ_DIR)/*
+	-rm -r $(OBJ_DIR) $(BIN_DIR) $(TEST_OBJ_DIR) $(LIB)

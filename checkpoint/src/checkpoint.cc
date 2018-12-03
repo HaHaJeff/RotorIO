@@ -71,7 +71,7 @@ void Checkpoint::SaveField(Strategy& io) {
     int block_id = info[4];
     int count = num * x * y * z;
     double* field = field_.GetField();
-    Data_3D data(field, num*x* y* z, block_id, "");
+    Data_3D data(field, num*x*y* z, block_id, "");
     io.Lseek(block_id%group_*count*sizeof(double));
     io.Write(data);
 }
@@ -111,6 +111,62 @@ void SetCheckpoint(RCConstant& constant, RCField& field, int group) {
 void Restart(RCConstant& constant, RCField& field, int group) {
     Checkpoint ck(constant, field, group);
     POSIXIO io;
+    Strategy* strategy = io.GetIOStrategy(static_cast<TYPE>(0));
+    char ckfld[12];
+    char ckcst[15];
+    int block_id = field.GetInfo()[4]/group;
+
+    // save field information
+    snprintf(ckfld, sizeof(ckfld), "ck_field_%02d", block_id);
+    strategy->Open(ckfld);
+    ck.RestoreField(*strategy);
+    strategy->Close();
+
+    // save constant information
+    snprintf(ckcst, sizeof(ckcst), "ck_constant_%02d", block_id);
+    strategy->Open(ckcst);
+    ck.RestoreConstant(*strategy);
+    strategy->Close();
+}
+
+void SetCheckpoint(RCConstant& constant, RCField& field, MPI_Comm comm, int rank, int group) {
+    Checkpoint ck(constant, field, group);
+    MPIIO io(comm, rank);
+    Strategy* strategy = io.GetIOStrategy(static_cast<TYPE>(0));
+    char ckfld[12];
+    char ckcst[15];
+    int block_id = field.GetInfo()[4]/group;
+
+    char tmpfld[15];
+    char tmpcst[18];
+
+    snprintf(tmpfld, sizeof(tmpfld), "tmp_field_%02d", block_id);
+    snprintf(tmpcst, sizeof(tmpcst), "tmp_constant_%02d", block_id);
+
+    // save field information
+    snprintf(ckfld, sizeof(ckfld), "ck_field_%02d", block_id);
+    strategy->Open(tmpfld);
+    ck.SaveField(*strategy);
+	if (rank == 0) {
+		printf("after saveField\n");
+	}
+    strategy->Close();
+
+    // save constant information
+    snprintf(ckcst, sizeof(ckcst), "ck_constant_%02d", block_id);
+    strategy->Open(tmpcst);
+    ck.SaveConstant(*strategy);
+    strategy->Close();
+
+    delete strategy;
+
+    rename(tmpfld, ckfld);
+    rename(tmpcst, ckcst);
+}
+
+void Restart(RCConstant& constant, RCField& field, MPI_Comm comm, int rank, int group) {
+    Checkpoint ck(constant, field, group);
+    MPIIO io(comm, rank);
     Strategy* strategy = io.GetIOStrategy(static_cast<TYPE>(0));
     char ckfld[12];
     char ckcst[15];

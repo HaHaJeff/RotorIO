@@ -26,11 +26,11 @@ all: init $(OBJFILES) $(TARGET_OBJS) $(LIB)
 
 $(OBJFILES):%.o:%.cc
 	@echo "Compiling $^ ==> $@..."
-	$(CXX) -c $^ -o $(OBJ_DIR)/$(notdir $@) $(INC_DIR) $(CXXFLAGS) 
+	$(CXX) -c $^ -o $(OBJ_DIR)/$(notdir $@) $(LIBRARY) $(INC_DIR) $(CXXFLAGS) 
 
 $(TARGET_OBJS):%.o:%.cc
 	@echo "Compiling $^ ==> $@..."
-	$(CXX) -c $^ -o $(TEST_OBJ_DIR)/$(notdir $@) $(INC_DIR) $(CXXFLAGS) 
+	$(CXX) -c $^ -o $(TEST_OBJ_DIR)/$(notdir $@) $(LIBRARY) $(INC_DIR) $(CXXFLAGS) 
 
 $(LIB) : $(OBJS) ./third_party/lib/libhdf5.a ./third_party/lib/libhdf5_hl.a
 	rm -f $@
@@ -63,5 +63,5 @@ init:
 
 .PHONY : clean
 clean :
-	-rm $(OBJ_DIR)/* $(BIN_DIR)/* $(TEST_OBJ_DIR)/*
+	-rm -r $(OBJ_DIR) $(BIN_DIR) $(TEST_OBJ_DIR) $(LIB)
 
